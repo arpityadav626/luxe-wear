@@ -13,6 +13,7 @@ import React, {
   type ReactNode,
 } from 'react';
 import Lenis from 'lenis';
+import { usePathname } from 'next/navigation';
 import { MotionConfig } from 'framer-motion';
 import { gsap, prefersReducedMotion, ScrollTrigger } from '@/lib/gsap';
 import type { GarmentSize } from '@/config/site';
@@ -91,10 +92,31 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isCartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
+  const pathname = usePathname();
 
   const lenisRef = useRef<Lenis | null>(null);
   const subscribersRef = useRef<Set<(metrics: ScrollMetrics) => void>>(new Set());
   const heroProgressRef = useRef<number>(0);
+
+  // Recalculate Lenis scroll limits & ScrollTrigger offsets whenever switching routes
+  useEffect(() => {
+    const hash = typeof window !== 'undefined' ? window.location.hash : '';
+    const timer = window.setTimeout(() => {
+      if (lenisRef.current) {
+        lenisRef.current.resize();
+        if (hash) {
+          lenisRef.current.scrollTo(hash, { immediate: false, duration: 1.1 });
+        } else {
+          lenisRef.current.scrollTo(0, { immediate: true });
+        }
+      } else if (!hash) {
+        window.scrollTo(0, 0);
+      }
+      ScrollTrigger.refresh();
+    }, 180);
+
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
 
   const publishMetrics = useCallback((metrics: ScrollMetrics) => {
     subscribersRef.current.forEach((cb) => cb(metrics));

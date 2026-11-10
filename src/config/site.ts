@@ -42,6 +42,27 @@ export interface CollectionProduct {
   swatches: readonly ProductSwatch[];
 }
 
+export interface LookbookFrame {
+  id: string;
+  index: string;
+  tag: string;
+  overlayLines: readonly [string, string];
+  garments: string;
+  location: string;
+  image: string;
+  alt: string;
+  layout: 'wide' | 'portrait-left' | 'portrait-right';
+}
+
+export interface BrandValueItem {
+  index: string;
+  title: string;
+  metric: number;
+  suffix: string;
+  metricLabel: string;
+  description: string;
+}
+
 export const siteConfig = {
   brand: {
     name: 'LUXE WEAR',
@@ -288,18 +309,149 @@ export const siteConfig = {
     ] satisfies CollectionProduct[],
   },
 
+  /**
+   * SECTION 6: EDITORIAL LOOKBOOK
+   * Full-bleed campaign imagery with scroll parallax, clip-path reveals,
+   * and overlapping oversized display typography.
+   * ASSET SWAP: replace /public/images/lookbook-*.jpg with campaign shoot frames.
+   */
+  lookbook: {
+    indexLabel: '05 / LOOKBOOK',
+    campaignTag: 'AW / 26 — EDITORIAL CAMPAIGN',
+    frames: [
+      {
+        id: 'look-01',
+        index: 'LOOK 01',
+        tag: 'MONOLITH STUDY',
+        overlayLines: ['SILENT', 'STRUCTURE'],
+        garments: 'LW-01 Overshirt · LW-02 Pleated Trouser',
+        location: 'TOKYO CONCRETE ATRIUM',
+        image: '/images/lookbook-01.jpg',
+        alt: 'Editorial lookbook model in obsidian 3L overshirt inside a brutalist concrete hall',
+        layout: 'wide',
+      },
+      {
+        id: 'look-02',
+        index: 'LOOK 02',
+        tag: 'STORM ARCHITECTURE',
+        overlayLines: ['WEIGHT', 'IN MOTION'],
+        garments: 'LW-03 3L Bonded Trench Shell',
+        location: 'BASALT COLONNADE · DUSK',
+        image: '/images/lookbook-02.jpg',
+        alt: 'Editorial portrait in full-length matte charcoal trench passing dark steel columns',
+        layout: 'portrait-left',
+      },
+      {
+        id: 'look-03',
+        index: 'LOOK 03',
+        tag: 'MODULAR SYSTEM',
+        overlayLines: ['LAYERED', 'FORM'],
+        garments: 'LW-05 Utility Vest · LW-04 Merino Knit',
+        location: 'ATELIER STUDY · 19°C',
+        image: '/images/lookbook-03.jpg',
+        alt: 'Close campaign frame showing charcoal merino mock-neck beneath modular utility vest',
+        layout: 'portrait-right',
+      },
+    ] satisfies LookbookFrame[],
+  },
+
+  /**
+   * SECTION 7: FEATURES / VALUES
+   * Three minimal pillars with animated numeric counters and line-draw rules.
+   */
+  values: {
+    indexLabel: '06 / PRINCIPLES',
+    headingLines: ['Built fewer.', 'Engineered longer.'],
+    items: [
+      {
+        index: '01',
+        title: 'Sustainable',
+        metric: 94,
+        suffix: '%',
+        metricLabel: 'TRACEABLE CLOSED-LOOP MILL ORIGIN',
+        description:
+          'Certified extra-fine merino, recycled nylon filaments, and PFC-free hydrophobic membranes finished under water-recovery dyeing.',
+      },
+      {
+        index: '02',
+        title: 'Limited Drops',
+        metric: 250,
+        suffix: '',
+        metricLabel: 'SERIALIZED UNITS PER EDITION',
+        description:
+          'Single-batch numbered garment runs stamped inside every interior placket. Zero overproduction and zero off-season markdowns.',
+      },
+      {
+        index: '03',
+        title: 'Made to Last',
+        metric: 15,
+        suffix: 'YR',
+        metricLabel: 'STRUCTURAL HARDWARE & SEAM WARRANTY',
+        description:
+          'Dual-needle 8 SPI lockstitching, anodized alloy Fidlock closures, and complimentary structural repairs across our studio network.',
+      },
+    ] satisfies BrandValueItem[],
+  },
+
+  /**
+   * SECTION 8: PRIVATE DROP CTA
+   */
+  cta: {
+    indexLabel: '07 / ALLOCATION',
+    headlineLines: ['Join the', 'next drop.'],
+    subtitle:
+      'Receive encrypted dispatch credentials 24 hours before Drop 02 opens to the public.',
+    placeholder: 'ENTER YOUR EMAIL ADDRESS',
+    buttonLabel: 'Request Access',
+    successMessage: 'Credential queued — check your inbox ahead of Drop 02 dispatch.',
+  },
+
+  /**
+   * SECTION 9: FOOTER
+   */
+  footer: {
+    legal: '© 2026 LUXE WEAR STUDIO. ALL SYSTEMS RESERVED.',
+    studios: [
+      { city: 'TOKYO', address: 'Minami-Aoyama 5-Chome, Minato-ku' },
+      { city: 'BERLIN', address: 'Torstrasse 112, Mitte' },
+    ],
+    columns: [
+      {
+        title: 'ARCHIVE',
+        links: [
+          { label: '01 · Hero Silhouette', href: '#hero' },
+          { label: '02 · Garment Anatomy', href: '#pinned-story' },
+          { label: '03 · Fabric & Craft', href: '#fabric-craft' },
+          { label: '04 · Capsule Collection', href: '#collection' },
+        ],
+      },
+      {
+        title: 'EDITION',
+        links: [
+          { label: '05 · AW/26 Lookbook', href: '#lookbook' },
+          { label: '06 · Brand Principles', href: '#values' },
+          { label: '07 · Early Allocation', href: '#drop-cta' },
+          { label: '08 · Technical Index', href: '/archive' },
+        ],
+      },
+    ],
+    contactEmail: 'atelier@luxewear.studio',
+  },
+
   nav: {
     links: [
       { index: '01', label: 'Silhouette', href: '#hero', status: 'live' as const },
       { index: '02', label: 'Garment Anatomy', href: '#pinned-story', status: 'live' as const },
       { index: '03', label: 'Fabric & Craft', href: '#fabric-craft', status: 'live' as const },
       { index: '04', label: 'Capsule Collection', href: '#collection', status: 'live' as const },
-      { index: '05', label: 'Lookbook & Drop', href: '#stage-next', status: 'upcoming' as const },
+      { index: '05', label: 'Lookbook', href: '#lookbook', status: 'live' as const },
+      { index: '06', label: 'Principles', href: '#values', status: 'live' as const },
+      { index: '07', label: 'Next Drop', href: '#drop-cta', status: 'live' as const },
     ],
     socials: [
       { label: 'Instagram', href: 'https://instagram.com' },
       { label: 'Are.na', href: 'https://are.na' },
-      { label: 'Archive', href: '#stage-next' },
+      { label: 'Spec Index', href: '/archive' },
     ],
   },
 } as const;

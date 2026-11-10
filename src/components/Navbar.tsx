@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useSyncExternalStore } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { siteConfig } from '@/config/site';
 import { useLenis } from '@/hooks/useLenis';
@@ -32,6 +33,8 @@ export function Navbar() {
     clearCart,
   } = useAppState();
   const { scrollTo } = useLenis();
+  const pathname = usePathname();
+  const router = useRouter();
   const isScrolled = useSyncExternalStore(
     subscribeWindowScroll,
     () => window.scrollY > 40,
@@ -53,7 +56,15 @@ export function Navbar() {
   const handleNavClick = (href: string) => {
     setMenuOpen(false);
     if (href.startsWith('#')) {
+      if (pathname !== '/') {
+        router.push(`/${href}`);
+        return;
+      }
       window.setTimeout(() => scrollTo(href), 220);
+      return;
+    }
+    if (href.startsWith('/')) {
+      router.push(href);
     }
   };
 
@@ -78,7 +89,7 @@ export function Navbar() {
           href="#hero"
           onClick={(e) => {
             e.preventDefault();
-            scrollTo('#hero');
+            handleNavClick('#hero');
           }}
           data-cursor="HOME"
           className="group inline-flex items-center gap-2.5 text-[#F2F0EB]"
@@ -165,14 +176,14 @@ export function Navbar() {
               </button>
             </div>
 
-            <ul className="my-auto flex flex-col divide-y divide-[#F2F0EB]/10">
+            <ul className="my-auto flex flex-col divide-y divide-[#F2F0EB]/10 overflow-y-auto py-2">
               {siteConfig.nav.links.map((item, idx) => (
                 <motion.li
                   key={item.index}
                   initial={{ y: 24, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{
-                    delay: 0.14 + idx * 0.055,
+                    delay: 0.14 + idx * 0.045,
                     duration: 0.75,
                     ease: [0.16, 1, 0.3, 1],
                   }}
@@ -180,26 +191,22 @@ export function Navbar() {
                   <a
                     href={item.href}
                     onClick={(e) => {
-                      if (item.href.startsWith('#')) e.preventDefault();
+                      if (item.href.startsWith('#') || item.href.startsWith('/')) e.preventDefault();
                       handleNavClick(item.href);
                     }}
-                    data-cursor={item.status === 'live' ? 'VIEW' : 'NEXT'}
-                    className="group flex items-baseline justify-between py-4 sm:py-5"
+                    data-cursor="VIEW"
+                    className="group flex items-baseline justify-between py-2.5 sm:py-3.5"
                   >
                     <div className="flex items-baseline gap-4 sm:gap-8">
                       <span className="font-mono text-xs text-[#8D8B86] transition-colors group-hover:text-[#C8FF3D]">
                         {item.index}
                       </span>
-                      <span className="font-display text-[clamp(1.75rem,4.4vw,4rem)] font-medium uppercase tracking-[-0.03em] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-3">
+                      <span className="font-display text-[clamp(1.35rem,3.4vw,3.1rem)] font-medium uppercase tracking-[-0.03em] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-3">
                         {item.label}
                       </span>
                     </div>
-                    <span
-                      className={`font-mono text-[10px] uppercase tracking-[0.18em] ${
-                        item.status === 'live' ? 'text-[#C8FF3D]' : 'text-[#8D8B86]'
-                      }`}
-                    >
-                      {item.status === 'live' ? 'LIVE' : 'STAGE 04'}
+                    <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#C8FF3D]">
+                      EXPLORE
                     </span>
                   </a>
                 </motion.li>
@@ -218,7 +225,7 @@ export function Navbar() {
                     target={s.href.startsWith('http') ? '_blank' : undefined}
                     rel={s.href.startsWith('http') ? 'noreferrer' : undefined}
                     onClick={(e) => {
-                      if (s.href.startsWith('#')) {
+                      if (s.href.startsWith('#') || s.href.startsWith('/')) {
                         e.preventDefault();
                         handleNavClick(s.href);
                       }
