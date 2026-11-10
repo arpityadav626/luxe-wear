@@ -18,15 +18,18 @@ export function CustomCursor() {
     const el = rootRef.current;
     if (!el) return;
 
-    const moveX = gsap.quickTo(el, 'x', { duration: 0.32, ease: 'power3.out' });
-    const moveY = gsap.quickTo(el, 'y', { duration: 0.32, ease: 'power3.out' });
+    document.documentElement.classList.add('custom-cursor-enabled');
+
+    const moveX = gsap.quickTo(el, 'x', { duration: 0.28, ease: 'power3.out' });
+    const moveY = gsap.quickTo(el, 'y', { duration: 0.28, ease: 'power3.out' });
 
     const onPointerMove = (e: PointerEvent) => {
       if (!visible) setVisible(true);
       moveX(e.clientX);
       moveY(e.clientY);
 
-      const target = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-cursor]');
+      const target =
+        e.target instanceof Element ? e.target.closest<HTMLElement>('[data-cursor]') : null;
       const nextLabel = target?.dataset.cursor?.trim() ?? '';
       setLabel((prev) => (prev === nextLabel ? prev : nextLabel));
     };
@@ -40,6 +43,7 @@ export function CustomCursor() {
     document.addEventListener('mouseleave', onPointerLeave);
 
     return () => {
+      document.documentElement.classList.remove('custom-cursor-enabled');
       window.removeEventListener('pointermove', onPointerMove);
       document.removeEventListener('mouseleave', onPointerLeave);
     };
@@ -55,22 +59,24 @@ export function CustomCursor() {
       style={{
         zIndex: 'var(--z-cursor)',
         opacity: visible ? 1 : 0,
-        transition: 'opacity 0.25s ease',
+        transition: 'opacity 0.22s ease',
       }}
     >
       <div
-        className="flex items-center justify-center rounded-full border transition-[width,height,background-color,border-color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        className="flex items-center justify-center rounded-full border transition-[width,height,background-color,border-color,backdrop-filter] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{
           transform: 'translate(-50%, -50%)',
-          width: isExpanded ? '72px' : '10px',
-          height: isExpanded ? '72px' : '10px',
-          backgroundColor: isExpanded ? 'rgba(242, 240, 235, 0.94)' : '#F2F0EB',
-          borderColor: isExpanded ? '#F2F0EB' : 'rgba(10, 10, 10, 0.25)',
-          boxShadow: isExpanded ? '0 0 24px rgba(242, 240, 235, 0.16)' : 'none',
+          width: isExpanded ? '76px' : '14px',
+          height: isExpanded ? '76px' : '14px',
+          backgroundColor: isExpanded ? 'rgba(10, 10, 10, 0.45)' : 'rgba(242, 240, 235, 0.94)',
+          borderWidth: isExpanded ? '1.5px' : '1px',
+          borderColor: isExpanded ? '#F2F0EB' : 'rgba(242, 240, 235, 0.9)',
+          backdropFilter: isExpanded ? 'blur(8px)' : 'none',
+          boxShadow: isExpanded ? '0 0 24px rgba(242, 240, 235, 0.14)' : 'none',
         }}
       >
         <span
-          className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#0A0A0A] transition-opacity duration-200"
+          className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#F2F0EB] transition-opacity duration-200"
           style={{ opacity: isExpanded ? 1 : 0 }}
         >
           {label}

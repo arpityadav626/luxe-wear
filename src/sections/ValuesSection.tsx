@@ -147,11 +147,11 @@ export function ValuesSection() {
       aria-label="Principles"
       className="relative w-full border-t border-[#F2F0EB]/12 bg-[#0A0A0A] text-[#F2F0EB]"
       style={{
-        padding: 'clamp(5.5rem, 12vh, 9rem) var(--gutter)',
+        padding: 'clamp(6rem, 16vh, 11rem) var(--gutter)',
       }}
     >
       <div className="mb-10 border-b border-[#F2F0EB]/12 pb-4 sm:mb-14">
-        <span className="text-[13px] uppercase tracking-[0.18em] text-[#9A9790]">
+        <span className="text-xs uppercase tracking-[0.12em] text-[#9A9790]">
           {values.label}
         </span>
       </div>

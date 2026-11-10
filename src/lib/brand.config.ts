@@ -99,11 +99,12 @@ export const brandConfig = {
    * Then update `frameCount` below to match the exact exported frame total.
    */
   sequence: {
+    heroImage: '/images/hero-garment.webp',
     frameCount: 60, // PLACEHOLDER SEQUENCE COUNT: adjust when real turntable frames replace /public/sequence/frame_XXXX.webp
     pathPrefix: '/sequence/frame_',
     extension: '.webp',
-    width: 1080,
-    height: 1350,
+    width: 900,
+    height: 1125,
     heroAlt: 'LUXE WEAR technical overshirt in matte charcoal-black',
   },
 
@@ -124,7 +125,7 @@ export const brandConfig = {
       description: 'Double-layered neckband shaped to sit cleanly upright without stiffness.',
       detailNote: 'Bonded two-ply interlining with pressed seam allowances for lasting form.',
       bgColor: '#0A0A0A',
-      progressStop: 0.08,
+      progressStop: 0.06,
       macroImage: '/images/detail-collar.webp', // CLIENT SWAP: macro shoot of collar construction
       macroAlt: 'Close-up macro photograph of structured black shirt stand collar',
     },
@@ -157,7 +158,7 @@ export const brandConfig = {
       description: 'Close-woven matte cloth balancing wind resistance with natural drape.',
       detailNote: 'High-twist yarn weave treated with a fluorocarbon-free water-repellent finish.',
       bgColor: '#0A0A0A',
-      progressStop: 0.92,
+      progressStop: 0.94,
       macroImage: '/images/detail-weave.webp', // CLIENT SWAP: macro shoot of diagonal twill weave
       macroAlt: 'Close-up macro photograph of dark matte diagonal twill fabric texture',
     },
@@ -281,7 +282,7 @@ export const brandConfig = {
         overlayLines: ['SILENT', 'STRUCTURE'],
         caption: 'Technical Overshirt & Pleated Trouser',
         image: '/images/lookbook-01.webp',
-        alt: 'Lookbook frame of model wearing black overshirt inside minimalist concrete interior',
+        alt: 'Three-quarter rear lookbook photograph in concrete skylight gallery wearing black stand-collar overshirt and wide pleated trouser',
         layout: 'wide',
       },
       {
@@ -290,7 +291,7 @@ export const brandConfig = {
         overlayLines: ['WEIGHT', 'IN MOTION'],
         caption: 'Bonded Trench Shell',
         image: '/images/lookbook-02.webp',
-        alt: 'Lookbook frame of model striding in full-length matte charcoal trench coat',
+        alt: 'Three-quarter rear stride lookbook photograph wearing long matte charcoal funnel-collar trench coat in dark slate colonnade',
         layout: 'portrait-left',
       },
       {

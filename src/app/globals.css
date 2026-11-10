@@ -50,6 +50,13 @@ body {
   outline-offset: 3px;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  html.custom-cursor-enabled,
+  html.custom-cursor-enabled * {
+    cursor: none !important;
+  }
+}
+
 /* Lenis smooth scroll base */
 html.lenis,
 html.lenis body {

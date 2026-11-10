@@ -114,26 +114,26 @@ export function HeroSection() {
     };
   }, []);
 
-  const heroImageUrl = assetPath(`${brandConfig.sequence.pathPrefix}0001${brandConfig.sequence.extension}`);
+  const heroImageUrl = assetPath(brandConfig.sequence.heroImage);
 
   return (
     <section
       id="hero"
       ref={sectionRef}
       aria-label={`${brandConfig.brand.name} Hero`}
-      className="relative flex h-[100dvh] min-h-[640px] w-full flex-col justify-between overflow-hidden bg-[#0A0A0A]"
+      className="relative flex h-[100dvh] min-h-[680px] w-full flex-col justify-between overflow-hidden bg-[#0A0A0A]"
     >
         {/* Soft architectural horizon */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-[48%] h-[1px] bg-[#F2F0EB]/[0.06]"
+          className="pointer-events-none absolute inset-x-0 top-[50%] h-[1px] bg-[#F2F0EB]/[0.06]"
           style={{ zIndex: 'var(--z-bg)' }}
         />
 
         {/* Giant Display Typography layered behind the garment */}
         <h1
           aria-label={brandConfig.brand.name}
-          className="pointer-events-none absolute inset-x-0 top-0 bottom-[22vh] flex select-none flex-col justify-between px-[var(--gutter)] pt-[10vh] font-display text-[clamp(3.75rem,15vw,16rem)] font-bold uppercase leading-[0.86] tracking-[-0.015em] sm:bottom-[15vh] sm:pt-[9vh]"
+          className="pointer-events-none absolute inset-x-0 top-0 bottom-[21vh] flex select-none flex-col justify-between px-[var(--gutter)] pt-[12.5vh] font-display text-[clamp(3.6rem,14.2vw,15rem)] font-bold uppercase leading-[0.86] tracking-[-0.015em] sm:bottom-[15vh] sm:pt-[11.5vh]"
           style={{ zIndex: 'var(--z-hero-type)' }}
         >
           <span ref={topWordRef} className="block self-start overflow-hidden">
@@ -148,7 +148,7 @@ export function HeroSection() {
               data-hero-intro
               className="block text-transparent"
               style={{
-                WebkitTextStroke: '1.2px rgba(242, 240, 235, 0.36)',
+                WebkitTextStroke: '1.2px rgba(242, 240, 235, 0.38)',
               }}
             >
               {brandConfig.brand.shortLines[1]}
@@ -156,22 +156,31 @@ export function HeroSection() {
           </span>
         </h1>
 
-        {/* Feathered Studio Cutout with mix-blend-lighten so backdrop merges seamlessly into #0A0A0A */}
+        {/* Scaled (~1.6x) RGBA Transparent Garment Cutout + Radial Halo Glow */}
         <div
-          className="pointer-events-none relative mx-auto my-auto flex h-[48vh] w-[78vw] max-w-[340px] items-center justify-center sm:h-[68vh] sm:w-[62vw] sm:max-w-[540px]"
+          className="pointer-events-none relative mx-auto my-auto flex h-[58vh] min-h-[390px] max-h-[560px] w-[92vw] max-w-[460px] items-center justify-center sm:h-[80vh] sm:max-h-[820px] sm:w-[78vw] sm:max-w-[780px]"
           style={{ zIndex: 'var(--z-garment)' }}
         >
+          {/* Radial studio glow lifting obsidian twill off the black backdrop */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.085), transparent 60%)',
+            }}
+          />
+
           <div
             ref={garmentRef}
-            className="relative h-full w-full will-change-transform mix-blend-lighten [-webkit-mask-image:radial-gradient(ellipse_66%_74%_at_50%_50%,#000_56%,transparent_94%)] [mask-image:radial-gradient(ellipse_66%_74%_at_50%_50%,#000_56%,transparent_94%)]"
+            className="relative h-full w-full will-change-transform [-webkit-mask-image:radial-gradient(ellipse_90%_95%_at_50%_50%,#000_84%,transparent_100%)] [mask-image:radial-gradient(ellipse_90%_95%_at_50%_50%,#000_84%,transparent_100%)]"
           >
             <Image
               src={heroImageUrl}
               alt={brandConfig.sequence.heroAlt}
               fill
               priority
-              sizes="(max-width: 768px) 78vw, 540px"
-              className="object-contain object-center select-none"
+              sizes="(max-width: 768px) 92vw, 780px"
+              className="object-contain object-center select-none drop-shadow-[0_24px_48px_rgba(0,0,0,0.65)]"
             />
           </div>
         </div>
@@ -190,12 +199,12 @@ export function HeroSection() {
             <h2 className="font-display text-xl font-medium tracking-[-0.01em] text-[#F2F0EB] sm:text-2xl">
               {brandConfig.hero.title}
             </h2>
-            <p className="mt-1.5 text-base text-[#F2F0EB]/80 sm:text-lg">
+            <p className="mt-1.5 text-base text-[#F2F0EB]/82 sm:text-lg">
               {brandConfig.hero.subtitle}
             </p>
           </div>
 
-          <div className="hidden shrink-0 items-center gap-3 text-[13px] uppercase tracking-[0.16em] text-[#9A9790] sm:flex">
+          <div className="hidden shrink-0 items-center gap-3 text-xs uppercase tracking-[0.12em] text-[#9A9790] sm:flex">
             <span>Scroll</span>
             <span className="h-[1px] w-12 bg-[#F2F0EB]/25" aria-hidden="true" />
           </div>

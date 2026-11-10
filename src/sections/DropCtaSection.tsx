@@ -93,7 +93,7 @@ export function DropCtaSection() {
       aria-label="Join Next Drop"
       className="relative w-full border-t border-[#F2F0EB]/12 bg-[#0D0D10] text-[#F2F0EB]"
       style={{
-        padding: 'clamp(5.5rem, 13vh, 9.5rem) var(--gutter)',
+        padding: 'clamp(6.5rem, 18vh, 12rem) var(--gutter)',
       }}
     >
       <div className="grid grid-cols-1 items-end gap-12 lg:grid-cols-12 lg:gap-10">
@@ -102,11 +102,11 @@ export function DropCtaSection() {
             ref={headingRef}
             className="font-display text-[clamp(2.4rem,6.5vw,6rem)] font-semibold uppercase leading-[0.9] tracking-[-0.015em]"
           >
-            {cta.headlineLines.map((line, idx) => (
+            {cta.headlineLines.map((line) => (
               <span key={line} className="block overflow-hidden pb-1">
                 <span
                   data-cta-line
-                  className={`block ${idx === 1 ? 'text-[#9A9790]' : 'text-[#F2F0EB]'}`}
+                  className="block text-[#F2F0EB]"
                 >
                   {line}
                 </span>
@@ -116,7 +116,7 @@ export function DropCtaSection() {
         </div>
 
         <div ref={formWrapRef} className="lg:col-span-6">
-          <p className="max-w-lg text-base leading-relaxed text-[#F2F0EB]/82 sm:text-lg">
+          <p className="max-w-lg text-base leading-relaxed text-[#F2F0EB]/86 sm:text-[18px]">
             {cta.subtitle}
           </p>
 
@@ -126,14 +126,14 @@ export function DropCtaSection() {
               aria-live="polite"
               className="mt-8 border border-[#F2F0EB]/20 bg-[#121212] p-6"
             >
-              <p className="text-[13px] uppercase tracking-[0.16em] text-[#C8FF3D]">
+              <p className="text-xs uppercase tracking-[0.12em] text-[#C8FF3D]">
                 Registered · {submittedEmail}
               </p>
-              <p className="mt-2 text-sm text-[#F2F0EB]/85">{cta.successMessage}</p>
+              <p className="mt-2 text-[15px] text-[#F2F0EB]/88">{cta.successMessage}</p>
               <button
                 type="button"
                 onClick={() => setSubmittedEmail(null)}
-                className="mt-4 text-[13px] uppercase tracking-[0.12em] text-[#9A9790] underline underline-offset-4 hover:text-[#F2F0EB]"
+                className="mt-4 text-[13px] uppercase tracking-[0.1em] text-[#9A9790] underline underline-offset-4 hover:text-[#F2F0EB]"
               >
                 Use another email
               </button>
@@ -156,7 +156,7 @@ export function DropCtaSection() {
                       if (errorMsg) setErrorMsg(null);
                     }}
                     placeholder={cta.placeholder}
-                    className="w-full border-b border-[#F2F0EB]/28 bg-transparent py-3.5 text-sm tracking-[0.04em] text-[#F2F0EB] placeholder:text-[#9A9790] focus:border-[#F2F0EB] focus:outline-none"
+                    className="w-full border-b border-[#F2F0EB]/28 bg-transparent py-3.5 text-base tracking-[0.02em] text-[#F2F0EB] placeholder:text-[#9A9790] focus:border-[#F2F0EB] focus:outline-none"
                   />
                 </div>
 
@@ -165,7 +165,7 @@ export function DropCtaSection() {
                   <button
                     type="submit"
                     data-cursor="JOIN"
-                    className="inline-flex shrink-0 items-center gap-3 rounded-full bg-[#C8FF3D] px-7 py-3.5 text-[13px] font-medium uppercase tracking-[0.14em] text-[#0A0A0A] transition-colors duration-300 hover:bg-[#F2F0EB]"
+                    className="inline-flex shrink-0 items-center gap-3 rounded-full bg-[#C8FF3D] px-7 py-3.5 text-sm font-medium uppercase tracking-[0.1em] text-[#0A0A0A] transition-colors duration-300 hover:bg-[#F2F0EB]"
                   >
                     <span>{cta.buttonLabel}</span>
                     <span aria-hidden="true">→</span>
@@ -174,7 +174,7 @@ export function DropCtaSection() {
               </div>
 
               {errorMsg && (
-                <p role="alert" className="text-[13px] text-[#F2F0EB]">
+                <p role="alert" className="text-[15px] text-[#F2F0EB]">
                   {errorMsg}
                 </p>
               )}

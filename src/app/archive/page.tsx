@@ -81,14 +81,14 @@ export default function ArchivePage() {
               key={product.id}
               className="group flex flex-col justify-between border border-[#F2F0EB]/12 bg-[#121212]"
             >
-              <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#0A0A0A]">
+              <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#0F0F0F]">
                 <Image
                   src={assetPath(product.image)}
                   alt={product.alt}
                   fill
                   loading="lazy"
                   sizes="(max-width: 768px) 92vw, (max-width: 1024px) 46vw, 30vw"
-                  className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05]"
+                  className="object-cover object-center mix-blend-lighten transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05]"
                 />
                 <button
                   type="button"
@@ -103,7 +103,7 @@ export default function ArchivePage() {
                     })
                   }
                   data-cursor="BAG"
-                  className="absolute bottom-4 right-4 rounded-full border border-[#F2F0EB]/30 bg-[#0A0A0A]/85 px-4 py-1.5 text-[13px] uppercase tracking-[0.12em] text-[#F2F0EB] backdrop-blur-md transition-all duration-300 hover:border-[#F2F0EB] hover:bg-[#F2F0EB] hover:text-[#0A0A0A] md:pointer-events-none md:translate-y-1.5 md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:pointer-events-auto md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100"
+                  className="absolute bottom-4 right-4 rounded-full border border-[#F2F0EB]/30 bg-[#0A0A0A]/85 px-4 py-2 text-[13px] font-medium uppercase tracking-[0.1em] text-[#F2F0EB] backdrop-blur-md transition-all duration-300 hover:border-[#F2F0EB] hover:bg-[#F2F0EB] hover:text-[#0A0A0A] md:pointer-events-none md:translate-y-1.5 md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:pointer-events-auto md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100"
                 >
                   Add (M)
                 </button>
@@ -111,7 +111,7 @@ export default function ArchivePage() {
 
               <div className="flex flex-1 flex-col justify-between p-5">
                 <div>
-                  <p className="text-[13px] uppercase tracking-[0.14em] text-[#9A9790]">
+                  <p className="text-xs uppercase tracking-[0.08em] text-[#9A9790]">
                     {product.category}
                   </p>
                   <div className="mt-1.5 flex items-baseline justify-between gap-3">
@@ -126,14 +126,14 @@ export default function ArchivePage() {
                 </div>
 
                 <details className="mt-4 border-t border-[#F2F0EB]/10 pt-3">
-                  <summary className="flex cursor-pointer items-center justify-between text-[13px] uppercase tracking-[0.14em] text-[#9A9790] transition-colors hover:text-[#F2F0EB]">
+                  <summary className="flex cursor-pointer items-center justify-between text-[13px] font-medium uppercase tracking-[0.1em] text-[#9A9790] transition-colors hover:text-[#F2F0EB]">
                     <span>Details</span>
                     <span aria-hidden="true">+</span>
                   </summary>
-                  <p className="mt-2 text-base leading-relaxed text-[#F2F0EB]/80">
+                  <p className="mt-2 text-base leading-relaxed text-[#F2F0EB]/82">
                     {product.specDetail}
                   </p>
-                  <p className="mt-1.5 text-[13px] text-[#9A9790]">
+                  <p className="mt-1.5 text-[15px] text-[#9A9790]">
                     Finishes: {product.swatches.map((s) => s.name).join(' / ')}
                   </p>
                 </details>

@@ -21,6 +21,7 @@ export function PinnedStorySection() {
   const stageRef = useRef<HTMLDivElement>(null);
   const bgLayerRef = useRef<HTMLDivElement>(null);
   const copyCardRef = useRef<HTMLDivElement>(null);
+  const macroStageRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
 
@@ -82,18 +83,39 @@ export function PinnedStorySection() {
   }, [stages]);
 
   useEffect(() => {
-    if (!copyCardRef.current) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      gsap.set(copyCardRef.current, { y: 0, opacity: 1 });
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      if (copyCardRef.current) gsap.set(copyCardRef.current, { y: 0, opacity: 1 });
+      if (macroStageRef.current) gsap.set(macroStageRef.current, { clipPath: 'inset(0% 0% 0% 0%)' });
       return;
     }
-    const tween = gsap.fromTo(
-      copyCardRef.current,
-      { y: 12, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' }
-    );
+
+    const tweens: gsap.core.Tween[] = [];
+    if (copyCardRef.current) {
+      tweens.push(
+        gsap.fromTo(
+          copyCardRef.current,
+          { y: 12, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' }
+        )
+      );
+    }
+
+    if (macroStageRef.current) {
+      const activeFrame = macroStageRef.current.querySelector<HTMLElement>('[data-macro-active="true"]');
+      if (activeFrame) {
+        tweens.push(
+          gsap.fromTo(
+            activeFrame,
+            { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.06 },
+            { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: 0.65, ease: 'power3.out' }
+          )
+        );
+      }
+    }
+
     return () => {
-      tween.kill();
+      tweens.forEach((t) => t.kill());
     };
   }, [activeStage]);
 
@@ -136,19 +158,19 @@ export function PinnedStorySection() {
 
         {/* Minimal Top Bar */}
         <div className="relative z-20 flex items-center justify-between border-b border-[#F2F0EB]/12 pb-3.5">
-          <span className="text-[13px] uppercase tracking-[0.16em] text-[#9A9790]">
+          <span className="text-xs uppercase tracking-[0.1em] text-[#9A9790]">
             Garment Details
           </span>
-          <span className="text-[13px] uppercase tracking-[0.16em] tabular-nums text-[#F2F0EB]/85">
+          <span className="text-xs uppercase tracking-[0.1em] tabular-nums text-[#F2F0EB]/90">
             0{activeStage + 1} / 0{stages.length}
           </span>
         </div>
 
-        {/* Core Stage */}
-        <div className="relative z-20 my-auto grid flex-1 grid-cols-1 items-center gap-6 py-4 md:grid-cols-12 md:gap-8">
-          {/* Single Responsive Stage Tablist */}
-          <div className="order-2 flex items-center gap-5 md:order-1 md:col-span-2">
-            <div className="hidden h-44 w-[1px] bg-[#F2F0EB]/14 md:block" aria-hidden="true">
+        {/* Core Stage: Stage Rail (~160px) | Turntable 3D Canvas (flex-1) | Macro Image (42vw) + Copy */}
+        <div className="relative z-20 my-auto flex flex-1 flex-col justify-center gap-6 py-4 md:flex-row md:items-center md:gap-8 lg:gap-10">
+          {/* Single Responsive Stage Tablist + Thin Progress Line */}
+          <div className="order-2 flex shrink-0 items-center gap-5 md:order-1 md:w-[150px] lg:w-[170px]">
+            <div className="hidden h-52 w-[2px] bg-[#F2F0EB]/15 md:block" aria-hidden="true">
               <div
                 ref={progressBarRef}
                 className="h-full w-full origin-top bg-[#F2F0EB]"
@@ -159,7 +181,7 @@ export function PinnedStorySection() {
             <div
               role="tablist"
               aria-label="Construction details"
-              className="flex flex-wrap gap-1.5 md:flex-col md:items-start md:gap-3.5"
+              className="flex flex-wrap gap-2 md:flex-col md:items-start md:gap-4"
             >
               {stages.map((stage, idx) => {
                 const isActive = activeStage === idx;
@@ -172,20 +194,20 @@ export function PinnedStorySection() {
                     aria-selected={isActive}
                     onClick={() => handleSelectStage(idx)}
                     data-cursor="VIEW"
-                    className={`group inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[13px] uppercase tracking-[0.1em] transition-colors duration-300 md:rounded-none md:border-0 md:bg-transparent md:p-0 ${
+                    className={`group inline-flex items-center gap-2.5 rounded-full border px-3 py-1.5 text-[14px] font-medium uppercase tracking-[0.08em] transition-all duration-300 md:rounded-none md:border-0 md:bg-transparent md:p-0 ${
                       isActive
                         ? 'border-[#F2F0EB] bg-[#F2F0EB] text-[#0A0A0A] md:bg-transparent md:text-[#F2F0EB]'
-                        : 'border-[#F2F0EB]/18 bg-transparent text-[#9A9790] hover:text-[#F2F0EB]'
+                        : 'border-[#F2F0EB]/20 bg-transparent text-[#F2F0EB]/50 hover:text-[#F2F0EB]/85'
                     }`}
                   >
                     <span
                       aria-hidden="true"
-                      className={`hidden h-1.5 w-1.5 rounded-full transition-colors duration-300 md:inline-block ${
+                      className={`hidden h-2 w-2 rounded-full transition-colors duration-300 md:inline-block ${
                         isStitchingAccent
                           ? 'bg-[#C8FF3D]'
                           : isActive
                             ? 'bg-[#F2F0EB]'
-                            : 'bg-[#F2F0EB]/20 group-hover:bg-[#F2F0EB]/50'
+                            : 'bg-[#F2F0EB]/30 group-hover:bg-[#F2F0EB]/70'
                       }`}
                     />
                     <span>{stage.label}</span>
@@ -195,9 +217,19 @@ export function PinnedStorySection() {
             </div>
           </div>
 
-          {/* Scroll-Scrubbed Sequence Canvas blended seamlessly via mix-blend-lighten + radial vignette */}
-          <div className="order-1 relative h-[34vh] w-full sm:h-[42vh] md:order-2 md:col-span-5 md:h-[68vh]">
-            <div className="relative h-full w-full mix-blend-lighten [-webkit-mask-image:radial-gradient(ellipse_68%_78%_at_50%_50%,#000_56%,transparent_94%)] [mask-image:radial-gradient(ellipse_68%_78%_at_50%_50%,#000_56%,transparent_94%)]">
+          {/* Scroll-Scrubbed 0° -> 40° -> 90° -> 180° RGBA Sequence Canvas over Soft Radial Pedestal */}
+          <div className="order-1 relative h-[36vh] min-h-[260px] w-full shrink-0 md:order-2 md:h-[72vh] md:min-w-0 md:flex-1">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.085), transparent 60%)',
+              }}
+            />
+            <div
+              data-cursor="DRAG"
+              className="relative h-full w-full"
+            >
               <SequenceCanvas
                 progressRef={storyProgressRef}
                 activeProgress={stages[activeStage].progressStop}
@@ -205,17 +237,22 @@ export function PinnedStorySection() {
             </div>
           </div>
 
-          {/* Dedicated 4:3 Macro Detail Image + Single Editorial Copy Block */}
-          <div className="order-3 flex flex-col justify-center gap-5 md:col-span-5">
-            <div className="relative aspect-[4/3] w-full max-w-[380px] overflow-hidden border border-[#F2F0EB]/12 bg-[#121212]">
+          {/* Large Macro Detail Image (42vw on desktop) with clip-path wipe reveal + Editorial Copy */}
+          <div className="order-3 flex w-full shrink-0 flex-col justify-center gap-5 md:w-[42vw] md:max-w-[640px]">
+            <div
+              ref={macroStageRef}
+              data-cursor="ZOOM"
+              className="relative aspect-[16/10] w-full max-h-[38vh] overflow-hidden border border-[#F2F0EB]/12 bg-[#121212] md:max-h-[42vh]"
+            >
               {stages.map((stage, idx) => {
                 const isActive = activeStage === idx;
                 return (
                   <div
                     key={stage.id}
+                    data-macro-active={isActive ? 'true' : 'false'}
                     aria-hidden={!isActive}
-                    className={`absolute inset-0 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                      isActive ? 'scale-100 opacity-100' : 'pointer-events-none scale-[1.03] opacity-0'
+                    className={`absolute inset-0 transition-opacity duration-300 ${
+                      isActive ? 'z-10 opacity-100' : 'pointer-events-none z-0 opacity-0'
                     }`}
                   >
                     <Image
@@ -223,7 +260,7 @@ export function PinnedStorySection() {
                       alt={stage.macroAlt}
                       fill
                       loading={idx === 0 ? 'eager' : 'lazy'}
-                      sizes="(max-width: 768px) 92vw, 380px"
+                      sizes="(max-width: 768px) 92vw, 43vw"
                       className="object-cover"
                     />
                   </div>
@@ -231,38 +268,38 @@ export function PinnedStorySection() {
               })}
             </div>
 
-            <div className="relative min-h-[168px] md:min-h-[195px]">
+            <div className="relative min-h-[156px] md:min-h-[175px]">
               <div
                 ref={copyCardRef}
                 key={currentStage.id}
                 className="flex flex-col justify-start border-l border-[#F2F0EB]/18 pl-5 md:justify-center"
               >
-                <div className="flex items-center gap-2 text-[13px] uppercase tracking-[0.14em] text-[#9A9790]">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-[#9A9790]">
                   {currentStage.id === 'stitching' && (
                     <span
                       aria-hidden="true"
-                      className="h-1.5 w-1.5 rounded-full bg-[#C8FF3D]"
+                      className="h-2 w-2 rounded-full bg-[#C8FF3D]"
                     />
                   )}
                   <span>{currentStage.label}</span>
                 </div>
 
-                <h2 className="mt-2 font-display text-[clamp(1.6rem,2.4vw,2.35rem)] font-semibold uppercase leading-[1.02] tracking-[-0.015em] text-[#F2F0EB]">
+                <h2 className="mt-2 font-display text-[clamp(1.65rem,2.4vw,2.4rem)] font-semibold uppercase leading-[1.02] tracking-[-0.015em] text-[#F2F0EB]">
                   {currentStage.title}
                 </h2>
 
-                <p className="mt-2.5 max-w-md text-base leading-relaxed text-[#F2F0EB]/85">
+                <p className="mt-2.5 max-w-lg text-base leading-relaxed text-[#F2F0EB]/86">
                   {currentStage.description}
                 </p>
 
-                <details className="group/details mt-3.5 max-w-md">
-                  <summary className="inline-flex cursor-pointer items-center gap-2 text-[13px] uppercase tracking-[0.14em] text-[#9A9790] transition-colors hover:text-[#F2F0EB]">
+                <details className="group/details mt-3.5 max-w-lg">
+                  <summary className="inline-flex cursor-pointer items-center gap-2 text-[13px] font-medium uppercase tracking-[0.1em] text-[#9A9790] transition-colors hover:text-[#F2F0EB]">
                     <span>Details</span>
                     <span aria-hidden="true" className="text-sm leading-none">
                       +
                     </span>
                   </summary>
-                  <p className="mt-2 border-t border-[#F2F0EB]/10 pt-2 text-sm leading-relaxed text-[#9A9790]">
+                  <p className="mt-2 border-t border-[#F2F0EB]/10 pt-2 text-[15px] leading-relaxed text-[#9A9790]">
                     {currentStage.detailNote}
                   </p>
                 </details>

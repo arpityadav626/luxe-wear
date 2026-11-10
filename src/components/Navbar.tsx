@@ -75,14 +75,12 @@ export function Navbar() {
         initial={{ opacity: 0, y: -16 }}
         animate={isPreloaded ? { opacity: 1, y: 0 } : { opacity: 0, y: -16 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed inset-x-0 top-0 flex items-center justify-between transition-colors duration-300 ${
-          isScrolled
-            ? 'border-b border-[#F2F0EB]/10 bg-[#0A0A0A]/94 backdrop-blur-md'
-            : 'bg-transparent'
-        }`}
+        className="fixed inset-x-0 top-0 flex items-center justify-between bg-transparent transition-all duration-300"
         style={{
           zIndex: 'var(--z-nav)',
-          padding: isScrolled ? '1rem var(--gutter)' : '1.35rem var(--gutter)',
+          padding: isScrolled ? '0.95rem var(--gutter)' : '1.25rem var(--gutter)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
         }}
       >
         <a
@@ -92,7 +90,7 @@ export function Navbar() {
             handleNavClick('#hero');
           }}
           data-cursor="HOME"
-          className="font-display text-sm font-semibold uppercase tracking-[0.14em] [word-spacing:0.18em] text-[#F2F0EB] transition-opacity duration-300 hover:opacity-80 sm:text-base"
+          className="font-display text-base font-semibold uppercase tracking-[0.14em] [word-spacing:0.18em] text-[#F2F0EB] transition-opacity duration-300 hover:opacity-80 sm:text-lg"
         >
           {brandConfig.brand.name}
         </a>
@@ -108,7 +106,7 @@ export function Navbar() {
               aria-expanded={isMenuOpen}
               aria-controls="site-menu"
               data-cursor={isMenuOpen ? 'CLOSE' : 'MENU'}
-              className="group rounded-full border border-[#F2F0EB]/16 bg-[#0A0A0A]/60 px-4 py-2 text-[13px] font-medium uppercase tracking-[0.14em] text-[#F2F0EB] backdrop-blur-md transition-colors duration-300 hover:border-[#F2F0EB]/50"
+              className="group rounded-full border border-[#F2F0EB]/20 bg-[#0A0A0A]/45 px-4 py-2 text-[13px] font-medium uppercase tracking-[0.1em] text-[#F2F0EB] backdrop-blur-md transition-colors duration-300 hover:border-[#F2F0EB]/55 sm:text-sm"
             >
               <span className="nav-roll" data-label={menuLabel}>
                 <span>{menuLabel}</span>
@@ -126,7 +124,7 @@ export function Navbar() {
               aria-expanded={isCartOpen}
               aria-controls="site-cart"
               data-cursor="BAG"
-              className="group inline-flex items-center gap-2 rounded-full border border-[#F2F0EB]/16 bg-[#0A0A0A]/60 px-4 py-2 text-[13px] font-medium uppercase tracking-[0.14em] text-[#F2F0EB] backdrop-blur-md transition-colors duration-300 hover:border-[#F2F0EB]/50"
+              className="group inline-flex items-center gap-2 rounded-full border border-[#F2F0EB]/20 bg-[#0A0A0A]/45 px-4 py-2 text-[13px] font-medium uppercase tracking-[0.1em] text-[#F2F0EB] backdrop-blur-md transition-colors duration-300 hover:border-[#F2F0EB]/55 sm:text-sm"
             >
               <span className="nav-roll" data-label="Bag">
                 <span>Bag</span>
@@ -258,10 +256,10 @@ export function Navbar() {
               <div className="my-6 flex-1 overflow-y-auto pr-1">
                 {cart.length === 0 ? (
                   <div className="flex h-full flex-col items-start justify-center border border-dashed border-[#F2F0EB]/14 p-6">
-                    <p className="text-[13px] uppercase tracking-[0.16em] text-[#9A9790]">
+                    <p className="text-[12px] uppercase tracking-[0.1em] text-[#9A9790]">
                       Empty Bag
                     </p>
-                    <p className="mt-2 text-sm text-[#F2F0EB]/80">
+                    <p className="mt-2 text-[15px] leading-relaxed text-[#F2F0EB]/82">
                       Select any silhouette in the Capsule section or Archive to add it here.
                     </p>
                   </div>
@@ -272,26 +270,26 @@ export function Navbar() {
                         key={`${item.id}-${item.size}`}
                         className="flex gap-4 border border-[#F2F0EB]/12 bg-[#121212] p-3.5"
                       >
-                        <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#0A0A0A]">
+                        <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#0F0F0F]">
                           <Image
                             src={item.image}
                             alt={item.name}
                             fill
                             sizes="80px"
-                            className="object-cover"
+                            className="object-cover mix-blend-lighten"
                           />
                         </div>
                         <div className="flex flex-1 flex-col justify-between">
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <span className="text-[13px] uppercase tracking-[0.12em] text-[#9A9790]">
+                              <span className="text-[12px] uppercase tracking-[0.08em] text-[#9A9790]">
                                 {item.code} · Size {item.size}
                               </span>
-                              <h3 className="mt-0.5 text-sm font-medium text-[#F2F0EB]">
+                              <h3 className="mt-0.5 text-[15px] font-medium text-[#F2F0EB]">
                                 {item.name}
                               </h3>
                             </div>
-                            <span className="text-[13px] tabular-nums">
+                            <span className="text-[15px] tabular-nums">
                               ${item.price * item.quantity}
                             </span>
                           </div>

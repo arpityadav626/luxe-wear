@@ -93,19 +93,19 @@ export function FabricCraftSection() {
       aria-label="Fabric Material and Tailoring"
       className="relative w-full border-t border-[#F2F0EB]/12 bg-[#0A0A0A] text-[#F2F0EB]"
       style={{
-        padding: 'clamp(5.5rem, 12vh, 9rem) var(--gutter)',
+        padding: 'clamp(6rem, 16vh, 11rem) var(--gutter)',
       }}
     >
       {/* Minimal Top Label */}
       <div className="mb-10 border-b border-[#F2F0EB]/12 pb-4 sm:mb-14">
-        <span className="text-[13px] uppercase tracking-[0.18em] text-[#9A9790]">
+        <span className="text-xs uppercase tracking-[0.12em] text-[#9A9790]">
           {craft.label}
         </span>
       </div>
 
       {/* Masked Line-by-Line Headline */}
       <div ref={headlineBlockRef} className="max-w-6xl">
-        <h2 className="font-display text-[clamp(1.42rem,4.35vw,4.2rem)] font-semibold uppercase leading-[0.98] tracking-[-0.015em]">
+        <h2 className="font-display text-[clamp(1.65rem,4.35vw,4.35rem)] font-semibold uppercase leading-[0.98] tracking-[-0.015em]">
           {craft.headlineLines.map((line, i) => (
             <span key={line} className="block overflow-hidden pb-1">
               <span
@@ -120,7 +120,7 @@ export function FabricCraftSection() {
       </div>
 
       {/* Editorial Grid: Left Macro Parallax Textile | Right Concise Line + Details Drawer */}
-      <div className="mt-10 grid grid-cols-1 items-start gap-10 md:mt-14 md:grid-cols-12 md:gap-12">
+      <div className="mt-12 grid grid-cols-1 items-start gap-10 md:mt-16 md:grid-cols-12 md:gap-12">
         <div className="md:col-span-7">
           <div
             ref={macroFrameRef}
@@ -141,24 +141,24 @@ export function FabricCraftSection() {
         </div>
 
         <div className="flex flex-col justify-between md:col-span-5 md:pt-4">
-          <p className="text-lg leading-relaxed text-[#F2F0EB]/85 sm:text-xl sm:leading-snug">
+          <p className="text-[19px] leading-relaxed text-[#F2F0EB]/90 sm:text-[21px] sm:leading-[1.45]">
             {craft.statement}
           </p>
 
-          <details className="mt-8 border-y border-[#F2F0EB]/14 py-4">
-            <summary className="flex cursor-pointer items-center justify-between text-[13px] uppercase tracking-[0.16em] text-[#F2F0EB]/85 transition-colors hover:text-[#F2F0EB]">
+          <details className="mt-9 border-y border-[#F2F0EB]/14 py-4">
+            <summary className="flex cursor-pointer items-center justify-between text-[13px] font-medium uppercase tracking-[0.12em] text-[#F2F0EB]/88 transition-colors hover:text-[#F2F0EB] sm:text-sm">
               <span>{craft.detailsDrawerLabel}</span>
-              <span aria-hidden="true" className="text-sm text-[#9A9790]">
+              <span aria-hidden="true" className="text-base text-[#9A9790]">
                 +
               </span>
             </summary>
             <dl className="mt-4 divide-y divide-[#F2F0EB]/10 border-t border-[#F2F0EB]/10">
               {craft.specs.map((spec) => (
                 <div key={spec.label} className="flex flex-col gap-1 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-                  <dt className="text-[13px] uppercase tracking-[0.14em] text-[#9A9790]">
+                  <dt className="text-xs uppercase tracking-[0.1em] text-[#9A9790]">
                     {spec.label}
                   </dt>
-                  <dd className="text-sm text-[#F2F0EB]/85 sm:text-right">{spec.value}</dd>
+                  <dd className="text-[15px] text-[#F2F0EB]/88 sm:text-right">{spec.value}</dd>
                 </div>
               ))}
             </dl>

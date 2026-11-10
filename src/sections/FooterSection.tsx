@@ -83,7 +83,7 @@ export function FooterSection() {
                   <Link
                     href={item.href}
                     data-cursor="OPEN"
-                    className="nav-roll text-sm text-[#F2F0EB]/85 transition-colors hover:text-[#F2F0EB]"
+                    className="nav-roll text-[15px] text-[#F2F0EB]/85 transition-colors hover:text-[#F2F0EB] sm:text-base"
                     data-label={item.label}
                   >
                     <span>{item.label}</span>
@@ -97,7 +97,7 @@ export function FooterSection() {
                     }}
                     data-cursor="VIEW"
                     data-label={item.label}
-                    className="nav-roll text-sm text-[#F2F0EB]/85 transition-colors hover:text-[#F2F0EB]"
+                    className="nav-roll text-[15px] text-[#F2F0EB]/85 transition-colors hover:text-[#F2F0EB] sm:text-base"
                   >
                     <span>{item.label}</span>
                   </a>
@@ -110,7 +110,7 @@ export function FooterSection() {
         <div className="flex flex-wrap items-center gap-6">
           <a
             href={`mailto:${brand.contactEmail}`}
-            className="text-sm text-[#9A9790] transition-colors hover:text-[#F2F0EB]"
+            className="text-[15px] text-[#9A9790] transition-colors hover:text-[#F2F0EB] sm:text-base"
           >
             {brand.contactEmail}
           </a>
@@ -120,7 +120,7 @@ export function FooterSection() {
               type="button"
               onClick={() => handleLinkClick('#hero')}
               data-cursor="TOP"
-              className="rounded-full border border-[#F2F0EB]/20 px-4 py-2 text-[13px] uppercase tracking-[0.12em] text-[#F2F0EB] transition-colors duration-300 hover:border-[#F2F0EB]/60"
+              className="rounded-full border border-[#F2F0EB]/20 px-4 py-2 text-[13px] font-medium uppercase tracking-[0.1em] text-[#F2F0EB] transition-colors duration-300 hover:border-[#F2F0EB]/60"
             >
               ↑ Top
             </button>
@@ -139,7 +139,7 @@ export function FooterSection() {
       </div>
 
       {/* Minimal Copyright Row */}
-      <div className="border-t border-[#F2F0EB]/12 pt-5 text-[13px] text-[#9A9790]">
+      <div className="border-t border-[#F2F0EB]/12 pt-5 text-[14px] text-[#9A9790]">
         <span>{brand.copyright}</span>
       </div>
     </footer>

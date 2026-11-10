@@ -26,21 +26,21 @@ function CollectionProductCard({ product }: { product: CapsuleProduct }) {
 
   return (
     <article
-      className="group flex w-[76vw] max-w-[300px] shrink-0 snap-center flex-col justify-between md:w-[clamp(260px,21.5vw,310px)] md:max-w-none md:snap-none"
+      className="group flex w-[80vw] max-w-[340px] shrink-0 snap-center flex-col justify-between md:w-[28vw] md:min-w-[300px] md:max-w-[430px] md:snap-none"
       aria-label={product.name}
     >
-      {/* Distinct 3:4 Portrait Garment Frame with Hover Zoom, Colorway Tint & Hover Add */}
+      {/* Unified #0F0F0F Studio Container with mix-blend-lighten, Colorway Tint & Hover Add */}
       <div
         data-cursor="VIEW"
-        className="relative h-[40vh] min-h-[270px] max-h-[395px] w-full overflow-hidden border border-[#F2F0EB]/10 bg-[#0D0D10] md:h-[46vh] md:min-h-[300px] md:max-h-[420px]"
+        className="relative h-[40vh] min-h-[260px] max-h-[395px] w-full overflow-hidden border border-[#F2F0EB]/10 bg-[#0F0F0F] md:h-[45vh] md:min-h-[290px] md:max-h-[430px]"
       >
         <Image
           src={assetPath(product.image)}
           alt={product.alt}
           fill
           loading="lazy"
-          sizes="(max-width: 768px) 76vw, 24vw"
-          className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06]"
+          sizes="(max-width: 768px) 80vw, 28vw"
+          className="object-cover object-center mix-blend-lighten transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06]"
         />
 
         <div
@@ -54,28 +54,28 @@ function CollectionProductCard({ product }: { product: CapsuleProduct }) {
           type="button"
           onClick={handleQuickAdd}
           data-cursor="BAG"
-          className="absolute bottom-3.5 right-3.5 rounded-full border border-[#F2F0EB]/30 bg-[#0A0A0A]/85 px-4 py-1.5 text-[13px] uppercase tracking-[0.12em] text-[#F2F0EB] backdrop-blur-md transition-all duration-300 hover:border-[#F2F0EB] hover:bg-[#F2F0EB] hover:text-[#0A0A0A] md:pointer-events-none md:translate-y-1.5 md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:pointer-events-auto md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100"
+          className="absolute bottom-4 right-4 rounded-full border border-[#F2F0EB]/30 bg-[#0A0A0A]/85 px-4 py-2 text-[13px] font-medium uppercase tracking-[0.1em] text-[#F2F0EB] backdrop-blur-md transition-all duration-300 hover:border-[#F2F0EB] hover:bg-[#F2F0EB] hover:text-[#0A0A0A] md:pointer-events-none md:translate-y-1.5 md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:pointer-events-auto md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100"
         >
           Add (M)
         </button>
       </div>
 
-      {/* Slim Editorial Meta & Colorway Swatches */}
-      <div className="mt-3.5 flex flex-col gap-2.5 border-t border-[#F2F0EB]/12 pt-3">
+      {/* Editorial Meta & Larger Colorway Swatches (> 14px) */}
+      <div className="mt-4 flex flex-col gap-2.5 border-t border-[#F2F0EB]/12 pt-3.5">
         <div className="flex items-baseline justify-between gap-3">
           <div>
             <h3 className="font-display text-lg font-medium tracking-[-0.01em] text-[#F2F0EB] sm:text-xl">
               {product.name}
             </h3>
-            <p className="mt-0.5 text-sm text-[#9A9790]">{product.material}</p>
+            <p className="mt-0.5 text-[15px] text-[#9A9790]">{product.material}</p>
           </div>
-          <span className="shrink-0 font-display text-lg font-medium tabular-nums text-[#F2F0EB]">
+          <span className="shrink-0 font-display text-lg font-medium tabular-nums text-[#F2F0EB] sm:text-xl">
             ${product.price}
           </span>
         </div>
 
-        <div className="flex items-center gap-2.5" role="group" aria-label={`Colorway for ${product.name}`}>
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-3" role="group" aria-label={`Colorway for ${product.name}`}>
+          <div className="flex items-center gap-2">
             {product.swatches.map((swatch, idx) => {
               const isSelected = idx === swatchIdx;
               return (
@@ -86,21 +86,21 @@ function CollectionProductCard({ product }: { product: CapsuleProduct }) {
                   onMouseEnter={() => setSwatchIdx(idx)}
                   aria-label={`${swatch.name} colorway`}
                   aria-pressed={isSelected}
-                  className={`relative flex h-5 w-5 items-center justify-center rounded-full border transition-transform duration-200 ${
+                  className={`relative flex h-7 w-7 items-center justify-center rounded-full border transition-transform duration-200 ${
                     isSelected
-                      ? 'scale-110 border-[#F2F0EB]'
+                      ? 'scale-105 border-[#F2F0EB]'
                       : 'border-[#F2F0EB]/25 hover:scale-105'
                   }`}
                 >
                   <span
-                    className="h-3 w-3 rounded-full"
+                    className="h-4 w-4 rounded-full"
                     style={{ backgroundColor: swatch.hex }}
                   />
                 </button>
               );
             })}
           </div>
-          <span className="text-[13px] uppercase tracking-[0.12em] text-[#9A9790]">
+          <span className="text-xs uppercase tracking-[0.08em] text-[#9A9790]">
             {activeSwatch.name}
           </span>
         </div>
@@ -202,43 +202,42 @@ export function HorizontalCollectionSection() {
         paddingBottom: 'clamp(1.75rem, 4vh, 2.75rem)',
       }}
     >
-      {/* Top Row with Label & Right Progress Counter (01 / 05) */}
+      {/* Top Row with Heading & Right Progress Counter (01 / 05) */}
       <div className="px-[var(--gutter)]">
-        <div className="flex items-center justify-between gap-2 border-b border-[#F2F0EB]/12 pb-3.5">
-          <span className="text-[13px] uppercase tracking-[0.18em] text-[#9A9790]">
-            {brandConfig.collection.label}
-          </span>
-          <span className="text-[13px] uppercase tracking-[0.16em] tabular-nums text-[#F2F0EB]/85">
+        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#F2F0EB]/12 pb-3.5">
+          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1">
+            <span className="text-xs uppercase tracking-[0.1em] text-[#9A9790]">
+              {brandConfig.collection.label}
+            </span>
+            <h2 className="font-display text-2xl font-semibold uppercase tracking-[-0.015em] text-[#F2F0EB] sm:text-3xl">
+              {brandConfig.collection.heading}
+            </h2>
+          </div>
+          <span className="text-xs uppercase tracking-[0.1em] tabular-nums text-[#F2F0EB]/88">
             0{activeIndex + 1} / 0{products.length}
           </span>
         </div>
       </div>
 
-      {/* Horizontal Track */}
-      <div ref={wrapperRef} className="my-auto w-full overflow-hidden py-4 md:py-2">
+      {/* Horizontal Track (3 x 28vw cards cleanly span desktop viewport) */}
+      <div ref={wrapperRef} className="my-auto w-full overflow-hidden py-4 md:py-2" data-cursor="DRAG">
         <div
           ref={trackRef}
           onScroll={handleMobileScroll}
-          className="no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-[var(--gutter)] px-[var(--gutter)] md:w-max md:snap-none md:gap-12 md:overflow-visible md:px-[var(--gutter)]"
+          className="no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-[var(--gutter)] px-[var(--gutter)] md:w-max md:snap-none md:gap-[2.2vw] md:overflow-visible md:px-[var(--gutter)]"
         >
-          <div className="hidden shrink-0 flex-col justify-end border-r border-[#F2F0EB]/12 pr-8 pb-4 md:flex md:w-[clamp(220px,18vw,270px)]">
-            <h2 className="font-display text-[clamp(2rem,3vw,3rem)] font-semibold uppercase leading-[0.96] tracking-[-0.015em] text-[#F2F0EB]">
-              {brandConfig.collection.heading}
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-[#9A9790]">
-              {brandConfig.collection.subtitle}
-            </p>
-          </div>
-
           {products.map((product) => (
             <CollectionProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>
 
-      {/* Right-aligned Progress Line */}
-      <div className="flex items-center justify-end gap-4 px-[var(--gutter)]">
-        <span className="text-[13px] uppercase tracking-[0.14em] text-[#9A9790] md:hidden">
+      {/* Bottom Meta + Right-aligned Progress Line */}
+      <div className="flex items-center justify-between gap-4 px-[var(--gutter)]">
+        <p className="hidden text-[15px] text-[#9A9790] md:block">
+          {brandConfig.collection.subtitle}
+        </p>
+        <span className="text-xs uppercase tracking-[0.1em] text-[#9A9790] md:hidden">
           Swipe
         </span>
         <div className="h-[1px] w-full max-w-xs overflow-hidden bg-[#F2F0EB]/14">
