@@ -1,26 +1,167 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "../styles/tokens.css";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-foreground: var(--c-fg);
+  --color-muted: var(--c-muted);
+  --color-accent: var(--c-accent);
+  --color-line: var(--c-line);
+  --font-display: var(--f-display);
+  --font-sans: var(--f-sans);
+  --font-mono: var(--f-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--c-bg);
+  color: var(--c-fg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100dvh;
+  background-color: var(--c-bg);
+  color: var(--c-fg);
+  font-family: var(--f-sans);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 3px;
+}
+
+/* Lenis smooth scroll base */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* Gate initial hero intro opacity on JS + motion so SSR/no-JS/reduced-motion never hide content */
+html.motion [data-hero-intro] {
+  opacity: 0;
+}
+
+/* Letter-roll hover treatment for navigation & interactive labels */
+.nav-roll {
+  display: inline-grid;
+  overflow: hidden;
+  line-height: 1.15;
+}
+
+.nav-roll > span {
+  grid-area: 1 / 1;
+  transition: transform 0.55s var(--ease-expo);
+}
+
+.nav-roll > span:last-child {
+  transform: translateY(115%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .nav-roll > span:first-child,
+  .nav-roll:hover > span:first-child {
+    transform: translateY(-115%);
+  }
+
+  .group:hover .nav-roll > span:last-child,
+  .nav-roll:hover > span:last-child {
+    transform: translateY(0%);
+  }
+}
+
+.nav-roll:focus-visible > span:first-child {
+  transform: translateY(-115%);
+}
+
+.nav-roll:focus-visible > span:last-child {
+  transform: translateY(0%);
+}
+
+/* Subtle film grain animation */
+@keyframes grainShift {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-1.5%, 1%); }
+  50% { transform: translate(1.2%, -1.5%); }
+  75% { transform: translate(-0.8%, -0.8%); }
+}
+
+.grain-layer {
+  animation: grainShift 8s steps(6) infinite;
+}
+
+/* Feather 3D stage perimeter so zoomed garment contours melt into the dark ground */
+.story-canvas-stage {
+  -webkit-mask-image: radial-gradient(ellipse 80% 76% at 50% 50%, #000 55%, transparent 98%);
+  mask-image: radial-gradient(ellipse 80% 76% at 50% 50%, #000 55%, transparent 98%);
+}
+
+@media (min-width: 768px) {
+  .story-canvas-stage {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 11%,
+      #000 89%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 11%,
+      #000 89%,
+      transparent 100%
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain-layer {
+    animation: none;
+  }
+
+  .nav-roll > span {
+    transition: none;
+  }
+
+  .nav-roll > span:last-child {
+    display: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

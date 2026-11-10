@@ -1,0 +1,33 @@
+/**
+ * Design tokens for LUXE WEAR.
+ * Palette: near-black (#0A0A0A), off-white (#F2F0EB), electric lime (#C8FF3D).
+ */
+:root {
+  --c-bg: #0a0a0a;
+  --c-surface: #121212;
+  --c-surface-elevated: #181818;
+  --c-fg: #f2f0eb;
+  --c-muted: #8d8b86;
+  --c-line: rgba(242, 240, 235, 0.12);
+  --c-line-strong: rgba(242, 240, 235, 0.24);
+  --c-accent: #c8ff3d;
+  --c-accent-ink: #0a0a0a;
+  --c-glow: rgba(200, 255, 61, 0.08);
+
+  --f-display: var(--font-clash-display), system-ui, sans-serif;
+  --f-sans: var(--font-satoshi), system-ui, sans-serif;
+  --f-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --gutter: clamp(1.25rem, 3vw, 3rem);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-power3: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --z-bg: 0;
+  --z-hero-type: 1;
+  --z-garment: 2;
+  --z-hero-ui: 10;
+  --z-nav: 40;
+  --z-drawer: 60;
+  --z-cursor: 80;
+  --z-preloader: 90;
+}
