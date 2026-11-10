@@ -2,21 +2,20 @@
 
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { siteConfig } from '@/config/site';
+import { brandConfig } from '@/lib/brand.config';
 import { DURATION, EASE, gsap, prefersReducedMotion, ScrollTrigger } from '@/lib/gsap';
 import { assetPath } from '@/lib/assets';
 
 /**
  * Section 4: FABRIC / CRAFT
- * Masked line-by-line editorial statement reveal paired with slow scrubbed parallax
- * and scale-on-scroll across macro Japanese 3L technical twill imagery.
+ * Masked line-by-line headline reveal paired with macro cloth parallax
+ * and a collapsible Construction Details drawer (specs tucked out of primary canvas).
  */
 export function FabricCraftSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineBlockRef = useRef<HTMLDivElement>(null);
   const macroFrameRef = useRef<HTMLDivElement>(null);
   const macroMediaRef = useRef<HTMLDivElement>(null);
-  const specsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -63,7 +62,7 @@ export function FabricCraftSection() {
       if (macroMediaRef.current && macroFrameRef.current) {
         gsap.fromTo(
           macroMediaRef.current,
-          { yPercent: -7, scale: 1.16 },
+          { yPercent: -7, scale: 1.15 },
           {
             yPercent: 7,
             scale: 1,
@@ -72,27 +71,7 @@ export function FabricCraftSection() {
               trigger: macroFrameRef.current,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: 0.4,
-            },
-          }
-        );
-      }
-
-      const layerItems = specsRef.current?.querySelectorAll<HTMLElement>('[data-layer-row]');
-      if (layerItems && layerItems.length > 0) {
-        gsap.fromTo(
-          layerItems,
-          { y: 28, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.9,
-            stagger: 0.1,
-            ease: EASE.power3Out,
-            scrollTrigger: {
-              trigger: specsRef.current,
-              start: 'top 86%',
-              once: true,
+              scrub: 0.45,
             },
           }
         );
@@ -105,114 +84,85 @@ export function FabricCraftSection() {
     };
   }, []);
 
-  const craft = siteConfig.fabricCraft;
+  const craft = brandConfig.fabricCraft;
 
   return (
     <section
       id="fabric-craft"
       ref={sectionRef}
-      aria-label="Fabric Material and Tailoring Craft"
+      aria-label="Fabric Material and Tailoring"
       className="relative w-full border-t border-[#F2F0EB]/12 bg-[#0A0A0A] text-[#F2F0EB]"
       style={{
         padding: 'clamp(5.5rem, 12vh, 9rem) var(--gutter)',
       }}
     >
-      {/* Top Section Header Row */}
-      <div className="mb-10 flex items-center justify-between gap-2 border-b border-[#F2F0EB]/12 pb-4 sm:mb-14">
-        <span className="whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-[#C8FF3D]">
-          {craft.indexLabel}
-        </span>
-        <span className="hidden whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.16em] text-[#8D8B86] sm:inline">
-          {craft.origin}
+      {/* Minimal Top Label */}
+      <div className="mb-10 border-b border-[#F2F0EB]/12 pb-4 sm:mb-14">
+        <span className="text-[13px] uppercase tracking-[0.18em] text-[#9A9790]">
+          {craft.label}
         </span>
       </div>
 
-      {/* Large Masked Split-Text Manifesto */}
-      <div ref={headlineBlockRef} className="max-w-5xl">
-        <h2 className="font-display text-[clamp(1.75rem,5.2vw,5rem)] font-semibold uppercase leading-[0.94] tracking-[-0.035em]">
+      {/* Masked Line-by-Line Headline */}
+      <div ref={headlineBlockRef} className="max-w-6xl">
+        <h2 className="font-display text-[clamp(1.42rem,4.35vw,4.2rem)] font-semibold uppercase leading-[0.98] tracking-[-0.015em]">
           {craft.headlineLines.map((line, i) => (
             <span key={line} className="block overflow-hidden pb-1">
               <span
                 data-craft-line
-                className={`block ${i === 1 ? 'text-[#8D8B86]' : 'text-[#F2F0EB]'}`}
+                className={`block ${i === 1 ? 'text-[#9A9790]' : 'text-[#F2F0EB]'}`}
               >
                 {line}
               </span>
             </span>
           ))}
         </h2>
-
-        <p className="mt-5 max-w-3xl text-lg leading-snug text-[#F2F0EB]/80 sm:text-2xl sm:leading-tight">
-          {craft.statementLines.map((line) => (
-            <span key={line} className="block overflow-hidden">
-              <span data-craft-line className="block">
-                {line}
-              </span>
-            </span>
-          ))}
-        </p>
       </div>
 
-      {/* Editorial Grid: Left Macro Parallax Textile | Right 3L Construction Specs */}
+      {/* Editorial Grid: Left Macro Parallax Textile | Right Concise Line + Details Drawer */}
       <div className="mt-10 grid grid-cols-1 items-start gap-10 md:mt-14 md:grid-cols-12 md:gap-12">
         <div className="md:col-span-7">
-          <figure>
-            <div
-              ref={macroFrameRef}
-              data-cursor="ZOOM"
-              className="group relative aspect-[4/4.2] max-h-[72vh] w-full overflow-hidden bg-[#121212]"
-            >
-              <div ref={macroMediaRef} className="relative h-full w-full will-change-transform">
-                <Image
-                  src={assetPath(craft.macroImage)}
-                  alt={craft.macroAlt}
-                  fill
-                  loading="eager"
-                  sizes="(max-width: 768px) 92vw, 56vw"
-                  className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
-                />
-              </div>
-
-              {/* Subtle edge gradient scrim for corner caption legibility */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0A0A0A]/80 to-transparent"
+          <div
+            ref={macroFrameRef}
+            data-cursor="ZOOM"
+            className="group relative aspect-[4/4.2] max-h-[72vh] w-full overflow-hidden bg-[#121212]"
+          >
+            <div ref={macroMediaRef} className="relative h-full w-full will-change-transform">
+              <Image
+                src={assetPath(craft.macroImage)}
+                alt={craft.macroAlt}
+                fill
+                loading="lazy"
+                sizes="(max-width: 768px) 92vw, 56vw"
+                className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
               />
-
-              <figcaption className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-[#F2F0EB]/85">
-                <span>{craft.macroCaption}</span>
-                <span className="hidden text-[#C8FF3D] sm:inline">MACRO 12X</span>
-              </figcaption>
             </div>
-          </figure>
+          </div>
         </div>
 
         <div className="flex flex-col justify-between md:col-span-5 md:pt-4">
-          <p className="text-base leading-relaxed text-[#F2F0EB]/80 sm:text-lg">
-            {craft.narrative}
+          <p className="text-lg leading-relaxed text-[#F2F0EB]/85 sm:text-xl sm:leading-snug">
+            {craft.statement}
           </p>
 
-          <div
-            ref={specsRef}
-            className="mt-10 divide-y divide-[#F2F0EB]/12 border-y border-[#F2F0EB]/12"
-          >
-            {craft.layers.map((item) => (
-              <div key={item.index} data-layer-row className="py-6">
-                <div className="flex items-baseline justify-between gap-4">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#C8FF3D]">
-                    {item.index}
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#8D8B86]">
-                    LAMINATE SPEC
-                  </span>
+          <details className="mt-8 border-y border-[#F2F0EB]/14 py-4">
+            <summary className="flex cursor-pointer items-center justify-between text-[13px] uppercase tracking-[0.16em] text-[#F2F0EB]/85 transition-colors hover:text-[#F2F0EB]">
+              <span>{craft.detailsDrawerLabel}</span>
+              <span aria-hidden="true" className="text-sm text-[#9A9790]">
+                +
+              </span>
+            </summary>
+            <dl className="mt-4 divide-y divide-[#F2F0EB]/10 border-t border-[#F2F0EB]/10">
+              {craft.specs.map((spec) => (
+                <div key={spec.label} className="flex flex-col gap-1 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+                  <dt className="text-[13px] uppercase tracking-[0.14em] text-[#9A9790]">
+                    {spec.label}
+                  </dt>
+                  <dd className="text-sm text-[#F2F0EB]/85 sm:text-right">{spec.value}</dd>
                 </div>
-                <h3 className="mt-2 font-display text-xl font-medium tracking-[-0.02em] text-[#F2F0EB]">
-                  {item.name}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-[#8D8B86]">{item.detail}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </dl>
+          </details>
         </div>
       </div>
     </section>

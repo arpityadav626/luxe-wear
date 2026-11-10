@@ -5,9 +5,8 @@ import { gsap, isTouchDevice, prefersReducedMotion } from '@/lib/gsap';
 
 /**
  * Custom magnetic cursor follower.
- * Starts as a crisp electric-lime dot around the pointer and expands into a
- * labeled ring ("DRAG", "VIEW", "EXPLORE", "MENU", "BAG") over [data-cursor] targets.
- * Native cursor stays intact for usability and zero click-latency.
+ * Starts as a minimal off-white dot and expands into a crisp circle with action label
+ * ("VIEW", "EXPLORE", "BAG", "JOIN") over interactive [data-cursor] elements.
  */
 export function CustomCursor() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -63,15 +62,15 @@ export function CustomCursor() {
         className="flex items-center justify-center rounded-full border transition-[width,height,background-color,border-color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{
           transform: 'translate(-50%, -50%)',
-          width: isExpanded ? '76px' : '12px',
-          height: isExpanded ? '76px' : '12px',
-          backgroundColor: isExpanded ? 'rgba(200, 255, 61, 0.94)' : '#C8FF3D',
-          borderColor: isExpanded ? 'rgba(200, 255, 61, 1)' : 'rgba(10, 10, 10, 0.25)',
-          boxShadow: isExpanded ? '0 0 28px rgba(200, 255, 61, 0.22)' : 'none',
+          width: isExpanded ? '72px' : '10px',
+          height: isExpanded ? '72px' : '10px',
+          backgroundColor: isExpanded ? 'rgba(242, 240, 235, 0.94)' : '#F2F0EB',
+          borderColor: isExpanded ? '#F2F0EB' : 'rgba(10, 10, 10, 0.25)',
+          boxShadow: isExpanded ? '0 0 24px rgba(242, 240, 235, 0.16)' : 'none',
         }}
       >
         <span
-          className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-[#0A0A0A] transition-opacity duration-200"
+          className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#0A0A0A] transition-opacity duration-200"
           style={{ opacity: isExpanded ? 1 : 0 }}
         >
           {label}

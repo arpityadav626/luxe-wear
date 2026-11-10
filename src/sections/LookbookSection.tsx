@@ -2,13 +2,13 @@
 
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { siteConfig, type LookbookFrame } from '@/config/site';
+import { brandConfig, type LookbookFrame } from '@/lib/brand.config';
 import { DURATION, EASE, gsap, prefersReducedMotion, ScrollTrigger } from '@/lib/gsap';
 import { assetPath } from '@/lib/assets';
 
 /**
- * Individual lookbook frame with clip-path + scale(1.15 -> 1) reveal,
- * continuous scrubbed image parallax, and opposing overlapping oversized display type.
+ * Individual editorial campaign plate with clip-path + scale(1.15 -> 1) reveal,
+ * scrubbed parallax, and spaced oversized overlapping typography.
  */
 function LookbookPlate({ frame }: { frame: LookbookFrame }) {
   const plateRef = useRef<HTMLDivElement>(null);
@@ -85,7 +85,7 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
   return (
     <article
       ref={plateRef}
-      aria-label={`${frame.index} ${frame.tag}`}
+      aria-label={`${frame.tag}: ${frame.overlayLines.join(' ')}`}
       className={
         isWide
           ? 'relative w-full'
@@ -109,13 +109,12 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
               src={assetPath(frame.image)}
               alt={frame.alt}
               fill
-              loading="eager"
+              loading="lazy"
               sizes={isWide ? '100vw' : '(max-width: 768px) 92vw, 46vw'}
               className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
             />
           </div>
 
-          {/* Legibility gradient scrims over dark image regions */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#0A0A0A]/85 via-[#0A0A0A]/35 to-transparent"
@@ -127,26 +126,25 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
             />
           )}
 
-          {/* Overlapping Oversized Typography */}
+          {/* Overlapping Oversized Typography with Explicit Word Spacing */}
           <div
             ref={typeRef}
             className={`pointer-events-none absolute will-change-transform ${
               isWide
                 ? 'left-[var(--gutter)] top-[24%] max-w-4xl sm:top-[22%]'
-                : 'bottom-12 left-5 right-5 sm:bottom-14 sm:left-7'
+                : 'bottom-10 left-5 right-5 sm:bottom-12 sm:left-7'
             }`}
           >
-            <p className="mb-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-[#C8FF3D]">
-              {frame.index} · {frame.tag}
-            </p>
             <h3
-              className={`font-display font-bold uppercase leading-[0.86] tracking-[-0.025em] [word-spacing:0.14em] ${
+              className={`font-display font-bold uppercase leading-[0.88] tracking-[-0.015em] [word-spacing:0.22em] ${
                 isWide
-                  ? 'text-[clamp(2.5rem,7.8vw,8.2rem)]'
-                  : 'text-[clamp(2rem,4.5vw,4.6rem)]'
+                  ? 'text-[clamp(2.5rem,7.8vw,8rem)]'
+                  : 'text-[clamp(2rem,4.4vw,4.4rem)]'
               }`}
             >
-              <span className="block text-[#F2F0EB]/95">{frame.overlayLines[0]}</span>
+              <span className="block text-[#F2F0EB]/95">
+                {frame.overlayLines[0]}{' '}
+              </span>
               <span
                 className="block text-transparent"
                 style={{ WebkitTextStroke: '1.15px rgba(242, 240, 235, 0.7)' }}
@@ -157,14 +155,11 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
           </div>
         </div>
 
-        {/* Bottom Architectural Specimen Caption */}
+        {/* Single-Line Caption */}
         <figcaption
-          className={`mt-3.5 flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#8D8B86] ${
-            isWide ? 'px-[var(--gutter)]' : ''
-          }`}
+          className={`mt-3 text-sm text-[#9A9790] ${isWide ? 'px-[var(--gutter)]' : ''}`}
         >
-          <span className="text-[#F2F0EB]/80">{frame.garments}</span>
-          <span>{frame.location}</span>
+          {frame.caption}
         </figcaption>
       </figure>
     </article>
@@ -173,40 +168,33 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
 
 /**
  * Section 6: LOOKBOOK
- * Full-bleed campaign imagery with parallax, clip-path reveals,
- * and overlapping oversized typography across wide & asymmetric plates.
+ * Full-bleed campaign frames with parallax, clip-path reveals, and spaced overlapping display type.
  */
 export function LookbookSection() {
-  const { lookbook } = siteConfig;
+  const { lookbook } = brandConfig;
   const wideFrame = lookbook.frames[0];
   const diptychFrames = lookbook.frames.slice(1);
 
   return (
     <section
       id="lookbook"
-      aria-label="AW 26 Editorial Lookbook"
+      aria-label="Lookbook"
       className="relative w-full border-t border-[#F2F0EB]/12 bg-[#0A0A0A] text-[#F2F0EB]"
       style={{
         paddingTop: 'clamp(4.5rem, 9vh, 7rem)',
         paddingBottom: 'clamp(5.5rem, 12vh, 9rem)',
       }}
     >
-      {/* Top Section Index */}
       <div className="px-[var(--gutter)]">
-        <div className="mb-10 flex items-center justify-between gap-2 border-b border-[#F2F0EB]/12 pb-4 sm:mb-12">
-          <span className="whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-[#C8FF3D]">
-            {lookbook.indexLabel}
-          </span>
-          <span className="hidden whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.16em] text-[#8D8B86] sm:inline">
-            {lookbook.campaignTag}
+        <div className="mb-10 border-b border-[#F2F0EB]/12 pb-4 sm:mb-12">
+          <span className="text-[13px] uppercase tracking-[0.18em] text-[#9A9790]">
+            {lookbook.label}
           </span>
         </div>
       </div>
 
-      {/* Full-Bleed Opening Plate */}
       <LookbookPlate frame={wideFrame} />
 
-      {/* Asymmetric Portrait Diptych */}
       <div className="mt-14 grid grid-cols-1 items-start gap-12 px-[var(--gutter)] md:mt-20 md:grid-cols-12 md:gap-8">
         {diptychFrames.map((frame) => (
           <LookbookPlate key={frame.id} frame={frame} />

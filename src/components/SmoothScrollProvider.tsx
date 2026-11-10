@@ -9,14 +9,13 @@ import React, {
   useRef,
   useState,
   useSyncExternalStore,
-  type MutableRefObject,
   type ReactNode,
 } from 'react';
 import Lenis from 'lenis';
 import { usePathname } from 'next/navigation';
 import { MotionConfig } from 'framer-motion';
 import { gsap, prefersReducedMotion, ScrollTrigger } from '@/lib/gsap';
-import type { GarmentSize } from '@/config/site';
+import type { GarmentSize } from '@/lib/brand.config';
 import type { ScrollMetrics } from '@/hooks/useLenis';
 
 export interface CartItem {
@@ -36,7 +35,6 @@ interface SmoothScrollContextValue {
   stopScroll: () => void;
   startScroll: () => void;
   subscribeScroll: (cb: (metrics: ScrollMetrics) => void) => () => void;
-  heroProgressRef: MutableRefObject<number>;
 }
 
 interface AppStateContextValue {
@@ -96,9 +94,7 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
 
   const lenisRef = useRef<Lenis | null>(null);
   const subscribersRef = useRef<Set<(metrics: ScrollMetrics) => void>>(new Set());
-  const heroProgressRef = useRef<number>(0);
 
-  // Recalculate Lenis scroll limits & ScrollTrigger offsets whenever switching routes
   useEffect(() => {
     const hash = typeof window !== 'undefined' ? window.location.hash : '';
     const timer = window.setTimeout(() => {
@@ -174,7 +170,6 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     };
   }, [publishMetrics, reducedMotion]);
 
-  // Keep scroll locked whenever preloader holds first paint or menu/cart drawer is open
   useEffect(() => {
     const instance = lenisRef.current;
     if (!instance) return;
@@ -273,7 +268,6 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       stopScroll,
       startScroll,
       subscribeScroll,
-      heroProgressRef,
     }),
     [lenis, reducedMotion, scrollTo, stopScroll, startScroll, subscribeScroll]
   );

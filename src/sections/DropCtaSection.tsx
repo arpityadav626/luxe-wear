@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { siteConfig } from '@/config/site';
+import { brandConfig } from '@/lib/brand.config';
 import { DURATION, EASE, gsap, prefersReducedMotion, ScrollTrigger } from '@/lib/gsap';
 import { MagneticButton } from '@/components/MagneticButton';
 
 /**
  * Section 8: CTA ("Join the next drop")
- * Minimalist private allocation signup with underline email input and magnetic CTA.
+ * Clean underline email input + single signature electric-lime (#C8FF3D) magnetic CTA.
  */
 export function DropCtaSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -53,7 +53,7 @@ export function DropCtaSection() {
           onEnter: () => {
             gsap.fromTo(
               formWrapRef.current,
-              { y: 26, opacity: 0.15 },
+              { y: 24, opacity: 0.15 },
               {
                 y: 0,
                 opacity: 1,
@@ -76,7 +76,7 @@ export function DropCtaSection() {
     e.preventDefault();
     const cleaned = email.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleaned)) {
-      setErrorMsg('ENTER A VALID EMAIL ADDRESS TO REGISTER ALLOCATION.');
+      setErrorMsg('Please enter a valid email address.');
       return;
     }
     setErrorMsg(null);
@@ -84,38 +84,29 @@ export function DropCtaSection() {
     setEmail('');
   };
 
-  const { cta } = siteConfig;
+  const { cta } = brandConfig;
 
   return (
     <section
       id="drop-cta"
       ref={sectionRef}
-      aria-label="Join Next Drop Allocation"
+      aria-label="Join Next Drop"
       className="relative w-full border-t border-[#F2F0EB]/12 bg-[#0D0D10] text-[#F2F0EB]"
       style={{
         padding: 'clamp(5.5rem, 13vh, 9.5rem) var(--gutter)',
       }}
     >
-      <div className="mb-10 flex items-center justify-between gap-2 border-b border-[#F2F0EB]/12 pb-4 sm:mb-14">
-        <span className="whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-[#C8FF3D]">
-          {cta.indexLabel}
-        </span>
-        <span className="hidden whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.16em] text-[#8D8B86] sm:inline">
-          DROP 02 DISPATCH · PRIVATE ACCESS
-        </span>
-      </div>
-
       <div className="grid grid-cols-1 items-end gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-6">
           <h2
             ref={headingRef}
-            className="font-display text-[clamp(2.4rem,6.5vw,6.25rem)] font-semibold uppercase leading-[0.88] tracking-[-0.04em]"
+            className="font-display text-[clamp(2.4rem,6.5vw,6rem)] font-semibold uppercase leading-[0.9] tracking-[-0.015em]"
           >
             {cta.headlineLines.map((line, idx) => (
               <span key={line} className="block overflow-hidden pb-1">
                 <span
                   data-cta-line
-                  className={`block ${idx === 1 ? 'text-[#8D8B86]' : 'text-[#F2F0EB]'}`}
+                  className={`block ${idx === 1 ? 'text-[#9A9790]' : 'text-[#F2F0EB]'}`}
                 >
                   {line}
                 </span>
@@ -125,7 +116,7 @@ export function DropCtaSection() {
         </div>
 
         <div ref={formWrapRef} className="lg:col-span-6">
-          <p className="max-w-xl text-base leading-relaxed text-[#F2F0EB]/80 sm:text-lg">
+          <p className="max-w-lg text-base leading-relaxed text-[#F2F0EB]/82 sm:text-lg">
             {cta.subtitle}
           </p>
 
@@ -133,26 +124,26 @@ export function DropCtaSection() {
             <div
               role="status"
               aria-live="polite"
-              className="mt-8 border border-[#C8FF3D]/40 bg-[#121410] p-6"
+              className="mt-8 border border-[#F2F0EB]/20 bg-[#121212] p-6"
             >
-              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#C8FF3D]">
-                ALLOCATION CONFIRMED · {submittedEmail.toUpperCase()}
+              <p className="text-[13px] uppercase tracking-[0.16em] text-[#C8FF3D]">
+                Registered · {submittedEmail}
               </p>
               <p className="mt-2 text-sm text-[#F2F0EB]/85">{cta.successMessage}</p>
               <button
                 type="button"
                 onClick={() => setSubmittedEmail(null)}
-                className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#8D8B86] underline underline-offset-4 hover:text-[#F2F0EB]"
+                className="mt-4 text-[13px] uppercase tracking-[0.12em] text-[#9A9790] underline underline-offset-4 hover:text-[#F2F0EB]"
               >
-                Register Another Address
+                Use another email
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-4">
+            <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-3">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
                 <div className="flex-1">
                   <label htmlFor="drop-email" className="sr-only">
-                    Email address for next drop allocation
+                    Email address for release notice
                   </label>
                   <input
                     id="drop-email"
@@ -165,15 +156,16 @@ export function DropCtaSection() {
                       if (errorMsg) setErrorMsg(null);
                     }}
                     placeholder={cta.placeholder}
-                    className="w-full border-b border-[#F2F0EB]/28 bg-transparent py-3.5 font-mono text-xs tracking-[0.14em] text-[#F2F0EB] placeholder:text-[#8D8B86] focus:border-[#C8FF3D] focus:outline-none sm:text-sm"
+                    className="w-full border-b border-[#F2F0EB]/28 bg-transparent py-3.5 text-sm tracking-[0.04em] text-[#F2F0EB] placeholder:text-[#9A9790] focus:border-[#F2F0EB] focus:outline-none"
                   />
                 </div>
 
-                <MagneticButton strength={0.3} className="self-start sm:self-auto">
+                {/* Intentional primary Electric-Lime CTA */}
+                <MagneticButton strength={0.28} className="self-start sm:self-auto">
                   <button
                     type="submit"
                     data-cursor="JOIN"
-                    className="inline-flex shrink-0 items-center gap-3 rounded-full bg-[#C8FF3D] px-7 py-3.5 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-[#0A0A0A] transition-colors duration-300 hover:bg-[#F2F0EB]"
+                    className="inline-flex shrink-0 items-center gap-3 rounded-full bg-[#C8FF3D] px-7 py-3.5 text-[13px] font-medium uppercase tracking-[0.14em] text-[#0A0A0A] transition-colors duration-300 hover:bg-[#F2F0EB]"
                   >
                     <span>{cta.buttonLabel}</span>
                     <span aria-hidden="true">→</span>
@@ -181,16 +173,9 @@ export function DropCtaSection() {
                 </MagneticButton>
               </div>
 
-              {errorMsg ? (
-                <p
-                  role="alert"
-                  className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#C8FF3D]"
-                >
+              {errorMsg && (
+                <p role="alert" className="text-[13px] text-[#F2F0EB]">
                   {errorMsg}
-                </p>
-              ) : (
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#8D8B86]">
-                  LIMITED TO 250 SERIALIZED ALLOCATIONS PER RELEASE · UNSUBSCRIBE ANYTIME
                 </p>
               )}
             </form>

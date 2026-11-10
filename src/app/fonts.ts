@@ -1,9 +1,9 @@
 import localFont from 'next/font/local';
-import { JetBrains_Mono } from 'next/font/google';
 
 /**
- * Self-hosted Fontshare fonts downloaded into /src/fonts.
- * To swap fonts, replace the .woff2 files in src/fonts/ and update paths below.
+ * Maximum 2 self-hosted font families for quiet-luxury restraint & zero CLS:
+ * 1. Clash Display — editorial display headlines & oversized wordmarks
+ * 2. Satoshi — clean neutral body copy & small tracked uppercase labels
  */
 export const clashDisplay = localFont({
   src: [
@@ -22,12 +22,5 @@ export const satoshi = localFont({
     { path: '../fonts/satoshi-700-normal.woff2', weight: '700', style: 'normal' },
   ],
   variable: '--font-satoshi',
-  display: 'swap',
-});
-
-export const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-jetbrains-mono',
   display: 'swap',
 });

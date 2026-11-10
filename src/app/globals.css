@@ -10,7 +10,6 @@
   --color-line: var(--c-line);
   --font-display: var(--f-display);
   --font-sans: var(--f-sans);
-  --font-mono: var(--f-mono);
 }
 
 *,
@@ -42,8 +41,12 @@ body {
   color: var(--c-accent-ink);
 }
 
+.font-display {
+  word-spacing: 0.18em;
+}
+
 :focus-visible {
-  outline: 2px solid var(--c-accent);
+  outline: 2px solid var(--c-fg);
   outline-offset: 3px;
 }
 
@@ -70,39 +73,55 @@ html.motion [data-hero-intro] {
   opacity: 0;
 }
 
-/* Letter-roll hover treatment for navigation & interactive labels */
+/*
+ * Single-node letter-roll hover treatment using CSS ::after attr(data-label)
+ * Zero duplicate text in DOM or screen-reader innerText trees.
+ */
 .nav-roll {
-  display: inline-grid;
+  position: relative;
+  display: inline-block;
   overflow: hidden;
-  line-height: 1.15;
+  line-height: 1.25;
+  vertical-align: bottom;
 }
 
 .nav-roll > span {
-  grid-area: 1 / 1;
+  display: block;
   transition: transform 0.55s var(--ease-expo);
 }
 
-.nav-roll > span:last-child {
+.nav-roll::after {
+  content: attr(data-label);
+  content: attr(data-label) / "";
+  position: absolute;
+  inset: 0;
+  color: var(--c-fg);
   transform: translateY(115%);
+  transition: transform 0.55s var(--ease-expo);
+  pointer-events: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .group:hover .nav-roll > span:first-child,
-  .nav-roll:hover > span:first-child {
+  .group:hover .nav-roll > span,
+  .nav-roll:hover > span {
     transform: translateY(-115%);
   }
 
-  .group:hover .nav-roll > span:last-child,
-  .nav-roll:hover > span:last-child {
+  .group:hover .nav-roll::after,
+  .nav-roll:hover::after {
     transform: translateY(0%);
   }
 }
 
-.nav-roll:focus-visible > span:first-child {
+.nav-roll:focus-visible > span,
+a:focus-visible .nav-roll > span,
+button:focus-visible .nav-roll > span {
   transform: translateY(-115%);
 }
 
-.nav-roll:focus-visible > span:last-child {
+.nav-roll:focus-visible::after,
+a:focus-visible .nav-roll::after,
+button:focus-visible .nav-roll::after {
   transform: translateY(0%);
 }
 
@@ -128,29 +147,12 @@ html.motion [data-hero-intro] {
   display: none;
 }
 
-/* Feather 3D stage perimeter so zoomed garment contours melt into the dark ground */
-.story-canvas-stage {
-  -webkit-mask-image: radial-gradient(ellipse 80% 76% at 50% 50%, #000 55%, transparent 98%);
-  mask-image: radial-gradient(ellipse 80% 76% at 50% 50%, #000 55%, transparent 98%);
+/* Subtle architectural details drawer chevron animation */
+details > summary {
+  list-style: none;
 }
-
-@media (min-width: 768px) {
-  .story-canvas-stage {
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      #000 11%,
-      #000 89%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      #000 11%,
-      #000 89%,
-      transparent 100%
-    );
-  }
+details > summary::-webkit-details-marker {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -158,11 +160,12 @@ html.motion [data-hero-intro] {
     animation: none;
   }
 
-  .nav-roll > span {
+  .nav-roll > span,
+  .nav-roll::after {
     transition: none;
   }
 
-  .nav-roll > span:last-child {
+  .nav-roll::after {
     display: none;
   }
 
