@@ -30,7 +30,7 @@ export function StageTeaserSection() {
       <div className="w-full">
         <div className="mb-8 flex items-center justify-between gap-2 border-b border-[#F2F0EB]/12 pb-4">
           <span className="whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-[#C8FF3D]">
-            03 / SPECIFICATION SUMMARY
+            05 / SPECIFICATION SUMMARY
           </span>
           <span className="hidden whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.16em] text-[#8D8B86] sm:inline">
             {siteConfig.brand.season}
@@ -76,11 +76,11 @@ export function StageTeaserSection() {
         >
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#C8FF3D]">
-              STAGE 02 COMPLETE · READY FOR STAGE 03
+              STAGE 03 COMPLETE · READY FOR STAGE 04
             </p>
             <p className="mt-2 max-w-2xl text-base leading-relaxed text-[#F2F0EB]/85">
-              Next up in the build: Fabric &amp; Craft line-by-line split reveal, macro fabric
-              parallax, and the Horizontal Scroll Capsule Collection.
+              Next up in the final stage: Full-bleed Lookbook reveals, Brand Value counters, Drop 01
+              CTA signup, and oversized brand Footer.
             </p>
           </div>
 

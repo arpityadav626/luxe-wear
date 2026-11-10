@@ -199,7 +199,7 @@ export function Navbar() {
                         item.status === 'live' ? 'text-[#C8FF3D]' : 'text-[#8D8B86]'
                       }`}
                     >
-                      {item.status === 'live' ? 'STAGE 01 / LIVE' : 'STAGE 02+'}
+                      {item.status === 'live' ? 'LIVE' : 'STAGE 04'}
                     </span>
                   </a>
                 </motion.li>

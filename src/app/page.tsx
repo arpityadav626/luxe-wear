@@ -1,5 +1,7 @@
 import { HeroSection } from '@/sections/HeroSection';
 import { PinnedStorySection } from '@/sections/PinnedStorySection';
+import { FabricCraftSection } from '@/sections/FabricCraftSection';
+import { HorizontalCollectionSection } from '@/sections/HorizontalCollectionSection';
 import { StageTeaserSection } from '@/sections/StageTeaserSection';
 
 export default function HomePage() {
@@ -7,6 +9,8 @@ export default function HomePage() {
     <>
       <HeroSection />
       <PinnedStorySection />
+      <FabricCraftSection />
+      <HorizontalCollectionSection />
       <StageTeaserSection />
     </>
   );

@@ -118,6 +118,16 @@ html.motion [data-hero-intro] {
   animation: grainShift 8s steps(6) infinite;
 }
 
+/* Hide scrollbars while preserving smooth native swipe gestures on mobile carousels */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Feather 3D stage perimeter so zoomed garment contours melt into the dark ground */
 .story-canvas-stage {
   -webkit-mask-image: radial-gradient(ellipse 80% 76% at 50% 50%, #000 55%, transparent 98%);

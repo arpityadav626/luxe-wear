@@ -2,7 +2,7 @@
  * CENTRAL BRAND & PRODUCT CONFIGURATION
  * ---------------------------------------------------------------------------
  * Change brand name, palette accents, typography labels, hero garment copy,
- * pinned story chapters, and asset paths here in one place.
+ * pinned story chapters, fabric/craft specs, capsule collection products, and asset paths here.
  */
 
 export interface StoryChapter {
@@ -21,6 +21,25 @@ export interface StoryChapter {
   rotationX: number;
   /** Optional 3D hotspot marker coordinate on the garment */
   hotspot: [number, number, number];
+}
+
+export interface ProductSwatch {
+  name: string;
+  hex: string;
+  /** Subtle overlay tint applied over studio garment shot on swatch selection */
+  tintOverlay: string;
+}
+
+export interface CollectionProduct {
+  id: string;
+  code: string;
+  name: string;
+  category: string;
+  material: string;
+  price: number;
+  image: string;
+  alt: string;
+  swatches: readonly ProductSwatch[];
 }
 
 export const siteConfig = {
@@ -145,13 +164,137 @@ export const siteConfig = {
     },
   ] satisfies StoryChapter[],
 
+  /**
+   * SECTION 4: FABRIC / CRAFT
+   * Macro textile photograph + split-text headline + 3-layer weave breakdown.
+   */
+  fabricCraft: {
+    indexLabel: '03 / FABRIC & CRAFT',
+    origin: 'MILLED IN AICHI, JAPAN',
+    headlineLines: ['Woven to hold form.', 'Zero excess bulk.'],
+    statementLines: [
+      'Shuttle-loomed Japanese three-layer twill',
+      'engineered for silent abrasion across shifting climates.',
+    ],
+    narrative:
+      'Every bolt is woven at low tension using core-spun nylon wrapped in extra-fine merino, bonded to a breathable storm membrane, and sealed along high-stress seams.',
+    // ASSET SWAP: replace /public/images/fabric-macro.jpg with macro textile campaign shoot
+    macroImage: '/images/fabric-macro.jpg',
+    macroAlt: 'Macro close-up of black 310 GSM 3L diagonal twill weave and flatlock seam',
+    macroCaption: '310 GSM · 3L DIAGONAL TWILL / 8 SPI FLATLOCK',
+    layers: [
+      {
+        index: '01',
+        name: 'Outer Face · 310 GSM Twill',
+        detail: 'High-twist Japanese nylon-wool warp treated with PFC-free hydrophobic finish.',
+      },
+      {
+        index: '02',
+        name: 'Core · 18K/22K Membrane',
+        detail: 'Micro-porous windproof barrier permitting continuous vapor release under load.',
+      },
+      {
+        index: '03',
+        name: 'Backing · Brushed Merino Grid',
+        detail: 'Ultralight skin-side jersey channel eliminating cling while locking warmth.',
+      },
+    ],
+  },
+
+  /**
+   * SECTION 5: HORIZONTAL SCROLL CAPSULE COLLECTION
+   * 5 core garments rendered inside the pinned desktop track / mobile swipe carousel.
+   * ASSET SWAP: replace /public/images/collection-*.jpg with studio product photos.
+   */
+  collection: {
+    indexLabel: '04 / CAPSULE COLLECTION',
+    tagline: 'DROP 01 — ARCHITECTURAL SYSTEMS',
+    products: [
+      {
+        id: 'lw-01-overshirt',
+        code: 'LW-01',
+        name: 'Technical Twill Overshirt',
+        category: 'Modular Outerwear',
+        material: '310 GSM 3L Japanese Twill',
+        price: 420,
+        image: '/images/hero-garment.jpg',
+        alt: 'LW-01 Technical Twill Overshirt in obsidian black studio view',
+        swatches: [
+          { name: 'Obsidian', hex: '#18191D', tintOverlay: 'transparent' },
+          { name: 'Oxide Olive', hex: '#394034', tintOverlay: 'rgba(68, 88, 52, 0.28)' },
+          { name: 'Mineral Ash', hex: '#63666A', tintOverlay: 'rgba(138, 145, 156, 0.24)' },
+        ],
+      },
+      {
+        id: 'lw-02-trouser',
+        code: 'LW-02',
+        name: 'Pleated Tailored Trouser',
+        category: 'Articulated Bottom',
+        material: '280 GSM Wool-Nylon Serge',
+        price: 380,
+        image: '/images/collection-trouser.jpg',
+        alt: 'LW-02 Pleated Tailored Trouser in matte obsidian slate',
+        swatches: [
+          { name: 'Graphite', hex: '#23252A', tintOverlay: 'transparent' },
+          { name: 'Deep Carbon', hex: '#111214', tintOverlay: 'rgba(0, 0, 0, 0.28)' },
+          { name: 'Slate Fog', hex: '#545A66', tintOverlay: 'rgba(110, 128, 152, 0.26)' },
+        ],
+      },
+      {
+        id: 'lw-03-trench',
+        code: 'LW-03',
+        name: '3L Bonded Trench Shell',
+        category: 'Weatherproof Coat',
+        material: '3L Seam-Taped Storm Weave',
+        price: 790,
+        image: '/images/collection-trench.jpg',
+        alt: 'LW-03 3L Bonded Trench Shell with funnel collar and concealed snaps',
+        swatches: [
+          { name: 'Obsidian', hex: '#18191D', tintOverlay: 'transparent' },
+          { name: 'Moss Alloy', hex: '#2F3630', tintOverlay: 'rgba(60, 82, 62, 0.28)' },
+          { name: 'Acid Rim', hex: '#88A14B', tintOverlay: 'rgba(180, 230, 75, 0.14)' },
+        ],
+      },
+      {
+        id: 'lw-04-knit',
+        code: 'LW-04',
+        name: 'Raglan Mock-Neck Knit',
+        category: 'Thermal Knitwear',
+        material: '5-Gauge Extra-Fine Merino',
+        price: 340,
+        image: '/images/collection-knit.jpg',
+        alt: 'LW-04 Raglan Mock-Neck Knit pullover in charcoal bone slate',
+        swatches: [
+          { name: 'Charcoal', hex: '#2E3035', tintOverlay: 'transparent' },
+          { name: 'Warm Stone', hex: '#7A766E', tintOverlay: 'rgba(214, 206, 188, 0.22)' },
+          { name: 'Night', hex: '#141518', tintOverlay: 'rgba(8, 8, 12, 0.34)' },
+        ],
+      },
+      {
+        id: 'lw-05-vest',
+        code: 'LW-05',
+        name: 'Modular Utility Vest',
+        category: 'Tactical Layering',
+        material: 'Cordura-Weave Nylon + Fidlock',
+        price: 460,
+        image: '/images/collection-vest.jpg',
+        alt: 'LW-05 Modular Utility Vest with anodized buckle and concealed zip pockets',
+        swatches: [
+          { name: 'Carbon', hex: '#16171B', tintOverlay: 'transparent' },
+          { name: 'Titanium', hex: '#4B515B', tintOverlay: 'rgba(130, 145, 170, 0.24)' },
+          { name: 'Olive', hex: '#383E32', tintOverlay: 'rgba(84, 102, 68, 0.26)' },
+        ],
+      },
+    ] satisfies CollectionProduct[],
+  },
+
   nav: {
     links: [
       { index: '01', label: 'Silhouette', href: '#hero', status: 'live' as const },
       { index: '02', label: 'Garment Anatomy', href: '#pinned-story', status: 'live' as const },
-      { index: '03', label: 'Fabric & Craft', href: '#stage-next', status: 'upcoming' as const },
-      { index: '04', label: 'Capsule Collection', href: '#stage-next', status: 'upcoming' as const },
-      { index: '05', label: 'Lookbook', href: '#stage-next', status: 'upcoming' as const },
+      { index: '03', label: 'Fabric & Craft', href: '#fabric-craft', status: 'live' as const },
+      { index: '04', label: 'Capsule Collection', href: '#collection', status: 'live' as const },
+      { index: '05', label: 'Lookbook & Drop', href: '#stage-next', status: 'upcoming' as const },
     ],
     socials: [
       { label: 'Instagram', href: 'https://instagram.com' },
