@@ -7,12 +7,20 @@ import { DURATION, EASE, gsap, prefersReducedMotion, ScrollTrigger } from '@/lib
 import { assetPath } from '@/lib/assets';
 
 /**
- * Individual editorial campaign plate:
- * One look per viewport, uniform 4:5 portrait plate with scrubbed parallax,
- * solid off-white + grey overlapping display typography (zero outline text over photos),
- * and clean bottom-left caption.
+ * Editorial lookbook plate:
+ * Strictly one look per full viewport (`min-h-[100svh] overflow-hidden`) with zero overlap
+ * between frames. Look 01 renders full-bleed 100vw; Look 02 & Look 03 render >= 52vw wide
+ * with bottom-left 15px caption and high-contrast sentence-case Instrument Serif title.
  */
-function LookbookPlate({ frame }: { frame: LookbookFrame }) {
+function LookbookPlate({
+  frame,
+  isFirst,
+  sectionLabel,
+}: {
+  frame: LookbookFrame;
+  isFirst: boolean;
+  sectionLabel: string;
+}) {
   const plateRef = useRef<HTMLElement>(null);
   const clipRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
@@ -26,7 +34,7 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
       if (clipRef.current) {
         gsap.fromTo(
           clipRef.current,
-          { clipPath: 'inset(14% 0% 0% 0%)' },
+          { clipPath: isFirst ? 'inset(6% 0% 0% 0%)' : 'inset(10% 0% 0% 0%)' },
           {
             clipPath: 'inset(0% 0% 0% 0%)',
             duration: DURATION.slow,
@@ -43,10 +51,10 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
       if (mediaRef.current) {
         gsap.fromTo(
           mediaRef.current,
-          { yPercent: -6, scale: 1.14 },
+          { yPercent: isFirst ? -3 : -1.5, scale: isFirst ? 1.09 : 1.04 },
           {
-            yPercent: 6,
-            scale: 1,
+            yPercent: isFirst ? 3 : 1.5,
+            scale: isFirst ? 1.03 : 1.01,
             ease: 'none',
             scrollTrigger: {
               trigger: plate,
@@ -61,9 +69,9 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
       if (typeRef.current) {
         gsap.fromTo(
           typeRef.current,
-          { yPercent: 12 },
+          { yPercent: 8 },
           {
-            yPercent: -10,
+            yPercent: -5,
             ease: 'none',
             scrollTrigger: {
               trigger: plate,
@@ -80,64 +88,120 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
       ctx.revert();
       ScrollTrigger.refresh();
     };
-  }, []);
+  }, [isFirst]);
+
+  if (isFirst) {
+    return (
+      <article
+        ref={plateRef}
+        aria-label={`${frame.tag}: ${frame.overlayLines.join(' ')}`}
+        className="relative flex h-[100svh] min-h-[640px] w-full flex-col justify-between overflow-hidden bg-[#0B0B0A]"
+      >
+        <div
+          ref={clipRef}
+          className="absolute inset-0 overflow-hidden bg-[#121210]"
+        >
+          <div ref={mediaRef} className="relative h-full w-full will-change-transform">
+            <Image
+              src={assetPath(frame.image)}
+              alt={frame.alt}
+              fill
+              loading="lazy"
+              sizes="100vw"
+              className="object-cover object-[72%_50%] md:object-center"
+            />
+          </div>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-[#0B0B0A]/88 via-[#0B0B0A]/30 to-transparent"
+          />
+        </div>
+
+        <div
+          className="relative z-10 flex items-center justify-between border-b border-[#EDE8DF]/14 pb-4"
+          style={{
+            margin: 'clamp(4.5rem, 8vh, 5.75rem) var(--gutter) 0',
+          }}
+        >
+          <span className="text-[14px] tracking-[0.04em] text-[#EDE8DF]/82">{sectionLabel}</span>
+          <span className="text-[14px] tracking-[0.04em] text-[#EDE8DF]/72">{frame.tag}</span>
+        </div>
+
+        <div
+          className="relative z-10 flex flex-col items-start gap-6"
+          style={{
+            padding: '0 var(--gutter) clamp(2.5rem, 6vh, 4.5rem)',
+          }}
+        >
+          <div ref={typeRef} className="pointer-events-none">
+            <h3 className="display text-[clamp(3rem,6.8vw,6.8rem)] leading-[0.9] tracking-[-0.025em]">
+              <span className="block text-[#EDE8DF]">{frame.overlayLines[0]}</span>
+              <span className="block text-[#B3ADA2]">{frame.overlayLines[1]}</span>
+            </h3>
+          </div>
+
+          <p className="border-t border-[#EDE8DF]/18 pt-3.5 text-[15px] text-[#EDE8DF]/90">
+            <span className="mr-3 text-[#B3ADA2]">{frame.tag}</span>
+            <span>{frame.caption}</span>
+          </p>
+        </div>
+      </article>
+    );
+  }
+
+  const boxClass =
+    frame.id === 'look-02'
+      ? 'relative aspect-[4/5] max-h-[68svh] w-full overflow-hidden bg-[#121210] md:aspect-auto md:max-h-none md:h-[92svh] md:w-full'
+      : 'relative aspect-[4/5] max-h-[68svh] w-full overflow-hidden bg-[#121210] md:aspect-auto md:max-h-none md:h-[86svh] md:w-full';
+
+  const imgPosClass =
+    frame.id === 'look-02'
+      ? 'object-cover object-[50%_50%]'
+      : 'object-cover object-[50%_20%]';
 
   return (
     <article
       ref={plateRef}
       aria-label={`${frame.tag}: ${frame.overlayLines.join(' ')}`}
-      className="relative flex min-h-[78vh] w-full flex-col justify-center py-[3vh] md:min-h-[84vh] md:py-[4vh]"
+      className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden border-t border-[#EDE8DF]/10 bg-[#0B0B0A] md:h-[100svh]"
+      style={{
+        padding: 'clamp(2rem, 3.5vh, 3rem) var(--gutter)',
+      }}
     >
-      <figure className="relative flex w-full flex-col">
-        {/* Consistent 4:5 Editorial Plate shifted slightly right so overlapping heading + bottom-left caption breathe cleanly */}
-        <div className="relative md:ml-auto md:w-[44vw] md:max-w-[560px]">
-          <div
-            ref={clipRef}
-            data-cursor="LOOK"
-            className="group relative aspect-[4/5] w-full max-h-[76vh] overflow-hidden bg-[#121212]"
-          >
+      <figure className="relative mx-auto flex h-full w-full flex-col justify-center md:flex-row md:items-end md:justify-between">
+        <div className="relative order-2 mt-6 flex flex-col items-start md:order-1 md:mt-0 md:w-[36vw] md:pb-2">
+          <div ref={typeRef} className="pointer-events-none relative z-10 md:w-[44vw]">
+            <h3 className="display text-[clamp(2.8rem,6vw,6rem)] leading-[0.9] tracking-[-0.025em]">
+              <span className="block text-[#EDE8DF]">{frame.overlayLines[0]}</span>
+              <span className="block text-[#A9A398]">{frame.overlayLines[1]}</span>
+            </h3>
+          </div>
+
+          <figcaption className="mt-5 border-t border-[#EDE8DF]/14 pt-3.5 text-[15px] text-[#EDE8DF]/90 md:mt-7">
+            <span className="mr-3 text-[#8A857B]">{frame.tag}</span>
+            <span>{frame.caption}</span>
+          </figcaption>
+        </div>
+
+        <div className="relative order-1 w-full md:order-2 md:w-[51vw] lg:w-[52vw]">
+          <div ref={clipRef} className={boxClass}>
             <div ref={mediaRef} className="relative h-full w-full will-change-transform">
               <Image
                 src={assetPath(frame.image)}
                 alt={frame.alt}
                 fill
                 loading="lazy"
-                sizes="(max-width: 768px) 92vw, 560px"
-                className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+                sizes="(max-width: 768px) 92vw, 52vw"
+                className={imgPosClass}
               />
             </div>
 
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-60 bg-gradient-to-t from-[#0A0A0A]/85 via-[#0A0A0A]/35 to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-[#0B0B0A]/65 via-transparent to-transparent"
             />
           </div>
-
-          {/* Solid Two-Tone Overlapping Heading anchored lower-left across the 4:5 plate edge */}
-          <div
-            ref={typeRef}
-            className="pointer-events-none relative -mt-20 z-10 px-2 md:absolute md:-left-[22vw] md:bottom-14 md:mt-0 md:px-0"
-          >
-            <h3 className="font-display text-[clamp(2.4rem,6vw,5.8rem)] font-bold uppercase leading-[0.88] tracking-[-0.015em] [word-spacing:0.22em]">
-              <span className="block text-[#F2F0EB]">
-                {frame.overlayLines[0]}{' '}
-              </span>
-              <span className="block text-[#9A9790]">
-                {frame.overlayLines[1]}
-              </span>
-            </h3>
-          </div>
         </div>
-
-        {/* Clean Bottom-Left Caption */}
-        <figcaption className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-[#F2F0EB]/12 pt-4 md:mt-8">
-          <span className="text-xs uppercase tracking-[0.1em] text-[#9A9790]">
-            {frame.tag}
-          </span>
-          <span className="text-[15px] text-[#F2F0EB]/85 sm:text-base">
-            {frame.caption}
-          </span>
-        </figcaption>
       </figure>
     </article>
   );
@@ -145,8 +209,8 @@ function LookbookPlate({ frame }: { frame: LookbookFrame }) {
 
 /**
  * Section 6: LOOKBOOK
- * One look per viewport in a consistent 4:5 aspect ratio with solid off-white + grey
- * overlapping typography and bottom-left captions.
+ * Full-viewport sequential lookbook showcase: strictly one look per viewport, zero overlap
+ * between plates, full-bleed or >= 54vw frames, and bottom-left 15px caption anchored in ink.
  */
 export function LookbookSection() {
   const { lookbook } = brandConfig;
@@ -155,20 +219,16 @@ export function LookbookSection() {
     <section
       id="lookbook"
       aria-label="Lookbook"
-      className="relative w-full border-t border-[#F2F0EB]/12 bg-[#0A0A0A] text-[#F2F0EB]"
-      style={{
-        padding: 'clamp(5.5rem, 15vh, 10rem) var(--gutter)',
-      }}
+      className="relative w-full border-t border-[#EDE8DF]/12 bg-[#0B0B0A] text-[#EDE8DF]"
     >
-      <div className="mb-8 border-b border-[#F2F0EB]/12 pb-4 sm:mb-10">
-        <span className="text-xs uppercase tracking-[0.1em] text-[#9A9790]">
-          {lookbook.label}
-        </span>
-      </div>
-
-      <div className="flex flex-col gap-10 md:gap-14">
-        {lookbook.frames.map((frame) => (
-          <LookbookPlate key={frame.id} frame={frame} />
+      <div className="flex flex-col">
+        {lookbook.frames.map((frame, i) => (
+          <LookbookPlate
+            key={frame.id}
+            frame={frame}
+            isFirst={i === 0}
+            sectionLabel={lookbook.label}
+          />
         ))}
       </div>
     </section>

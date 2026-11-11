@@ -12,52 +12,72 @@
   --font-sans: var(--f-sans);
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-html {
-  background-color: var(--c-bg);
-  color: var(--c-fg);
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
+  html {
+    background-color: var(--bg);
+    color: var(--fg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 
-body {
-  min-height: 100dvh;
-  background-color: var(--c-bg);
-  color: var(--c-fg);
-  font-family: var(--f-sans);
-  overflow-x: clip;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--f-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
 
-::selection {
-  background-color: var(--c-accent);
-  color: var(--c-accent-ink);
-}
+  img,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
 
-.font-display {
-  word-spacing: 0.18em;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-:focus-visible {
-  outline: 2px solid var(--c-fg);
-  outline-offset: 3px;
-}
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
 
-@media (hover: hover) and (pointer: fine) {
-  html.custom-cursor-enabled,
-  html.custom-cursor-enabled * {
-    cursor: none !important;
+  h1,
+  h2,
+  h3,
+  p {
+    margin: 0;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--bg);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 4px;
   }
 }
 
-/* Lenis smooth scroll base */
+/* ---------- Lenis smooth scroll ---------- */
 html.lenis,
 html.lenis body {
   height: auto;
@@ -75,15 +95,406 @@ html.lenis body {
   overflow: clip;
 }
 
-/* Gate initial hero intro opacity on JS + motion so SSR/no-JS/reduced-motion never hide content */
-html.motion [data-hero-intro] {
-  opacity: 0;
+/* ---------- Static film grain (never flickers) ---------- */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
-/*
- * Single-node letter-roll hover treatment using CSS ::after attr(data-label)
- * Zero duplicate text in DOM or screen-reader innerText trees.
- */
+/* ---------- Typography ---------- */
+.display {
+  font-family: var(--f-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.link {
+  position: relative;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.9s var(--ease);
+}
+
+.link:hover::after,
+.link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ---------- Header ---------- */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px var(--gutter);
+  color: var(--fg);
+  transition: transform 0.9s var(--ease);
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: linear-gradient(to bottom, rgba(11, 11, 10, 0.78), rgba(11, 11, 10, 0));
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent);
+  mask-image: linear-gradient(to bottom, #000 58%, transparent);
+  pointer-events: none;
+}
+
+.header--hidden {
+  transform: translateY(-110%);
+}
+
+.header__logo {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+}
+
+.header__nav {
+  display: flex;
+  gap: var(--s4);
+}
+
+/* ---------- Quiet Cursor ---------- */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  z-index: 300;
+  mix-blend-mode: difference;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.cursor-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  display: grid;
+  place-items: center;
+}
+
+.cursor-label {
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+@media (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  isolation: isolate;
+  height: 100svh;
+  min-height: 640px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.hero__words {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: calc(var(--gutter) * 1.6) var(--gutter) 11vh;
+  font-size: clamp(6rem, 22vw, 28rem);
+  line-height: 0.82;
+  letter-spacing: -0.035em;
+  pointer-events: none;
+  color: var(--fg);
+}
+
+.hero__mask {
+  display: block;
+  overflow: hidden;
+  padding: 0.04em 0 0.1em;
+}
+
+.hero__mask--r {
+  align-self: flex-end;
+}
+
+.hero__word {
+  display: block;
+}
+
+.hero__word--italic {
+  font-style: italic;
+}
+
+.hero__garment {
+  position: relative;
+  z-index: 1;
+  width: min(62vw, 88svh);
+  height: 80svh;
+  will-change: transform;
+}
+
+.hero__garment--blend {
+  mix-blend-mode: lighten;
+}
+
+.hero__garment::before {
+  content: '';
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(237, 232, 223, 0.09), transparent 72%);
+  pointer-events: none;
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+}
+
+.hero__media img {
+  object-fit: contain;
+}
+
+.hero__foot {
+  position: absolute;
+  z-index: 2;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 32px;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s3);
+  font-size: 15px;
+}
+
+.hero__piece {
+  color: var(--fg);
+}
+
+.hero__season {
+  color: rgba(237, 232, 223, 0.76);
+}
+
+.hero__hint {
+  margin-left: auto;
+  color: rgba(237, 232, 223, 0.76);
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Garment film (pinned) ---------- */
+.film {
+  position: relative;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.film__pin {
+  position: relative;
+  isolation: isolate;
+  height: 100svh;
+  overflow: hidden;
+  background: radial-gradient(ellipse 55% 70% at 50% 55%, #1c1b1a 0%, #0b0b0a 75%);
+}
+
+.film__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 52%;
+}
+
+.stages {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.stage {
+  position: absolute;
+  width: clamp(290px, 28vw, 540px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: auto;
+}
+
+.stage--left-top {
+  left: 3vw;
+  top: 12vh;
+}
+
+.stage--right-bottom {
+  right: 3vw;
+  bottom: 11vh;
+}
+
+.stage--left-bottom {
+  left: 3vw;
+  bottom: 11vh;
+}
+
+.stage--right-top {
+  right: 3vw;
+  top: 12vh;
+}
+
+.stage:first-child {
+  visibility: visible;
+  opacity: 1;
+}
+
+.stage__media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #141312;
+  border: 1px solid rgba(237, 232, 223, 0.1);
+}
+
+.stage__media img {
+  object-fit: cover;
+}
+
+.stage__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: rgba(237, 232, 223, 0.72);
+  margin-bottom: 10px;
+}
+
+.stage__title {
+  font-size: clamp(2.6rem, 4.6vw, 5rem);
+  line-height: 0.96;
+  margin-bottom: 10px;
+  max-width: 14ch;
+  color: var(--fg);
+}
+
+.stage__line {
+  font-size: 18px;
+  line-height: 1.5;
+  color: rgba(237, 232, 223, 0.8);
+  max-width: 30ch;
+}
+
+@media (max-width: 900px) {
+  .film__pin {
+    background: radial-gradient(ellipse 75% 44% at 50% 30%, #1c1b1a 0%, #0b0b0a 75%);
+  }
+
+  .film__canvas {
+    width: 100%;
+    height: 52%;
+    top: 0;
+    bottom: auto;
+  }
+
+  .stages {
+    top: auto;
+    bottom: 0;
+    left: var(--gutter);
+    right: var(--gutter);
+    height: 46%;
+  }
+
+  .stage {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: auto;
+    width: 100%;
+    gap: 12px;
+    padding-bottom: 18px;
+  }
+
+  .stage__media {
+    aspect-ratio: 16 / 9;
+    max-height: 148px;
+    width: 100%;
+  }
+
+  .stage__title {
+    font-size: clamp(1.9rem, 7.5vw, 2.5rem);
+    max-width: none;
+  }
+
+  .stage__line {
+    font-size: 16px;
+  }
+
+  .hero__garment {
+    width: 86vw;
+    height: 58svh;
+  }
+
+  .hero__words {
+    font-size: clamp(4.75rem, 26vw, 7.5rem);
+    padding: max(92px, 11svh) var(--gutter) 10.5vh;
+  }
+
+  .header__nav {
+    gap: var(--s3);
+  }
+}
+
+/* ---------- Legacy hover roll retained for untouched Footer links only ---------- */
 .nav-roll {
   position: relative;
   display: inline-block;
@@ -94,7 +505,7 @@ html.motion [data-hero-intro] {
 
 .nav-roll > span {
   display: block;
-  transition: transform 0.55s var(--ease-expo);
+  transition: transform 0.55s var(--ease);
 }
 
 .nav-roll::after {
@@ -102,9 +513,9 @@ html.motion [data-hero-intro] {
   content: attr(data-label) / "";
   position: absolute;
   inset: 0;
-  color: var(--c-fg);
+  color: var(--fg);
   transform: translateY(115%);
-  transition: transform 0.55s var(--ease-expo);
+  transition: transform 0.55s var(--ease);
   pointer-events: none;
 }
 
@@ -132,19 +543,7 @@ button:focus-visible .nav-roll::after {
   transform: translateY(0%);
 }
 
-/* Subtle film grain animation */
-@keyframes grainShift {
-  0%, 100% { transform: translate(0, 0); }
-  25% { transform: translate(-1.5%, 1%); }
-  50% { transform: translate(1.2%, -1.5%); }
-  75% { transform: translate(-0.8%, -0.8%); }
-}
-
-.grain-layer {
-  animation: grainShift 8s steps(6) infinite;
-}
-
-/* Hide scrollbars while preserving smooth native swipe gestures on mobile carousels */
+/* ---------- Utility helpers used in untouched sections ---------- */
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -154,19 +553,17 @@ button:focus-visible .nav-roll::after {
   display: none;
 }
 
-/* Subtle architectural details drawer chevron animation */
 details > summary {
   list-style: none;
 }
+
+details > summary::-webkit-scrollbar,
 details > summary::-webkit-details-marker {
   display: none;
 }
 
+/* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .grain-layer {
-    animation: none;
-  }
-
   .nav-roll > span,
   .nav-roll::after {
     transition: none;

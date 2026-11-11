@@ -1,208 +1,104 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import dynamic from 'next/dynamic';
-import { brandConfig } from '@/lib/brand.config';
-import { DURATION, EASE, gsap, prefersReducedMotion, ScrollTrigger } from '@/lib/gsap';
-import { useAppState, useSmoothScrollContext } from '@/components/SmoothScrollProvider';
+import { useRef } from 'react';
+import Image from 'next/image';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+import { brand, hero } from '@/lib/brand.config';
+import { assetPath } from '@/lib/assets';
 
-const HeroGarmentCanvas = dynamic(
-  () => import('@/components/HeroGarmentCanvas').then((mod) => mod.HeroGarmentCanvas),
-  { ssr: false }
-);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /**
- * Section 2: HERO
- * Pure atmospheric opening stage: giant spaced LUXE / WEAR display typography
- * behind an interactive 3D obsidian tee (.glb) with pointer 360° orbit and
- * scroll-linked depth transitions.
+ * Section 1 (Landing): HERO
+ * Quiet-luxury sentence-case serif wordmark ("Luxe" / italic "Wear") masked
+ * behind The Overshirt over soft studio light, settling into scrubbed scroll drift.
  */
 export function HeroSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const topWordRef = useRef<HTMLSpanElement>(null);
-  const bottomWordRef = useRef<HTMLSpanElement>(null);
-  const introLine1Ref = useRef<HTMLSpanElement>(null);
-  const introLine2Ref = useRef<HTMLSpanElement>(null);
-  const captionRef = useRef<HTMLDivElement>(null);
-  const scrollProgressRef = useRef(0);
+  const root = useRef<HTMLElement>(null);
 
-  const { isPreloaded } = useAppState();
-  const { reducedMotion } = useSmoothScrollContext();
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
 
-  useEffect(() => {
-    if (!isPreloaded) return;
-
-    if (prefersReducedMotion()) {
-      gsap.set([introLine1Ref.current, introLine2Ref.current, captionRef.current], {
-        yPercent: 0,
-        opacity: 1,
-      });
-      return;
-    }
-
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: EASE.expoOut } });
-
-      tl.fromTo(
-        [introLine1Ref.current, introLine2Ref.current],
-        { yPercent: 108, opacity: 0 },
-        {
-          yPercent: 0,
-          opacity: 1,
-          duration: DURATION.base,
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        // The ONE orchestrated moment: wordmark rises out of its mask, garment surfaces.
+        gsap.from('.hero__word', {
+          yPercent: 105,
+          duration: 1.7,
+          ease: 'expo.out',
+          stagger: 0.14,
+          delay: 0.15,
+        });
+        gsap.from('.hero__media', {
+          opacity: 0.02,
+          scale: 1.04,
+          duration: 1.8,
+          ease: 'expo.out',
+          delay: 0.1,
+        });
+        gsap.from('.hero__foot > *', {
+          opacity: 0,
+          duration: 0.9,
+          ease: 'power2.out',
           stagger: 0.08,
-        }
-      ).fromTo(
-        captionRef.current,
-        { y: 16, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: DURATION.fast,
-          ease: EASE.power3Out,
-        },
-        0.1
-      );
-    }, sectionRef);
+          delay: 0.45,
+        });
 
-    return () => ctx.revert();
-  }, [isPreloaded]);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section || prefersReducedMotion()) {
-      scrollProgressRef.current = 0;
-      return;
-    }
-
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true,
-        onUpdate: (self) => {
-          scrollProgressRef.current = self.progress;
-        },
+        // Scroll: garment drifts closer, words part, footer line leaves gently.
+        gsap
+          .timeline({
+            defaults: { ease: 'none' },
+            scrollTrigger: {
+              trigger: root.current,
+              start: 'top top',
+              end: 'bottom top',
+              scrub: true,
+            },
+          })
+          .to('.hero__garment', { scale: 1.12, yPercent: -4 }, 0)
+          .to('.hero__mask--l', { xPercent: -10 }, 0)
+          .to('.hero__mask--r', { xPercent: 10 }, 0)
+          .to('.hero__foot', { opacity: 0, duration: 0.42 }, 0);
       });
 
-      gsap.to(topWordRef.current, {
-        yPercent: -22,
-        xPercent: -3,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        },
-      });
-
-      gsap.to(bottomWordRef.current, {
-        yPercent: 18,
-        xPercent: 3,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        },
-      });
-    }, section);
-
-    return () => {
-      ctx.revert();
-      ScrollTrigger.refresh();
-    };
-  }, []);
+      return () => mm.revert();
+    },
+    { scope: root }
+  );
 
   return (
-    <section
-      id="hero"
-      ref={sectionRef}
-      aria-label={`${brandConfig.brand.name} Hero`}
-      className="relative flex h-[100dvh] min-h-[680px] w-full flex-col justify-between overflow-hidden bg-[#0A0A0A]"
-    >
-        {/* Soft architectural horizon */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-[50%] h-[1px] bg-[#F2F0EB]/[0.06]"
-          style={{ zIndex: 'var(--z-bg)' }}
-        />
+    <section ref={root} id="hero" className="hero" aria-label={`${brand.name} — ${brand.piece.name}`}>
+      <h1 className="sr-only">{brand.name}</h1>
 
-        {/* Giant Display Typography layered behind the 3D garment */}
-        <h1
-          aria-label={brandConfig.brand.name}
-          className="pointer-events-none absolute inset-x-0 top-0 bottom-[21vh] flex select-none flex-col justify-between px-[var(--gutter)] pt-[12.5vh] font-display text-[clamp(3.6rem,14.2vw,15rem)] font-bold uppercase leading-[0.86] tracking-[-0.015em] sm:bottom-[15vh] sm:pt-[11.5vh]"
-          style={{ zIndex: 'var(--z-hero-type)' }}
-        >
-          <span ref={topWordRef} className="block self-start overflow-hidden">
-            <span ref={introLine1Ref} data-hero-intro className="block text-[#F2F0EB]/[0.9]">
-              {brandConfig.brand.shortLines[0]}{' '}
-            </span>
-          </span>
+      <div className="hero__words display" aria-hidden="true">
+        <span className="hero__mask hero__mask--l">
+          <span className="hero__word">Luxe</span>
+        </span>
+        <span className="hero__mask hero__mask--r">
+          <span className="hero__word hero__word--italic">Wear</span>
+        </span>
+      </div>
 
-          <span ref={bottomWordRef} className="block self-end overflow-hidden text-right">
-            <span
-              ref={introLine2Ref}
-              data-hero-intro
-              className="block text-transparent"
-              style={{
-                WebkitTextStroke: '1.2px rgba(242, 240, 235, 0.38)',
-              }}
-            >
-              {brandConfig.brand.shortLines[1]}
-            </span>
-          </span>
-        </h1>
-
-        {/* Interactive 3D Obsidian Garment Stage + Radial Halo Glow */}
-        <div
-          className="pointer-events-auto relative mx-auto mb-auto mt-[10vh] flex h-[54vh] min-h-[370px] max-h-[540px] w-[90vw] max-w-[480px] items-center justify-center sm:my-auto sm:h-[80vh] sm:max-h-[820px] sm:w-[76vw] sm:max-w-[780px]"
-          style={{ zIndex: 'var(--z-garment)' }}
-        >
-          {/* Radial studio glow lifting obsidian cloth off the black backdrop */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.11), transparent 62%)',
-            }}
+      <div className={`hero__garment${hero.hasAlpha ? '' : ' hero__garment--blend'}`}>
+        <div className="hero__media">
+          <Image
+            src={assetPath(hero.image)}
+            alt={hero.alt}
+            fill
+            priority
+            fetchPriority="high"
+            sizes="(max-width: 900px) 86vw, 60vw"
           />
-
-          <div className="relative h-full w-full">
-            <HeroGarmentCanvas
-              scrollProgressRef={scrollProgressRef}
-              reducedMotion={reducedMotion}
-            />
-          </div>
         </div>
+      </div>
 
-        {/* Minimal Editorial Caption & Interaction Hint */}
-        <div
-          ref={captionRef}
-          data-hero-intro
-          className="pointer-events-none relative mt-auto flex w-full items-end justify-between gap-6"
-          style={{
-            zIndex: 'var(--z-hero-ui)',
-            padding: '0 var(--gutter) clamp(1.5rem, 3.5vh, 2.5rem)',
-          }}
-        >
-          <div className="max-w-lg">
-            <h2 className="font-display text-xl font-medium tracking-[-0.01em] text-[#F2F0EB] sm:text-2xl">
-              {brandConfig.hero.title}
-            </h2>
-            <p className="mt-1.5 text-base text-[#F2F0EB]/82 sm:text-lg">
-              {brandConfig.hero.subtitle}
-            </p>
-          </div>
-
-          <div className="hidden shrink-0 items-center gap-3 text-xs uppercase tracking-[0.12em] text-[#9A9790] sm:flex">
-            <span>{brandConfig.hero.hint}</span>
-            <span className="h-[1px] w-12 bg-[#F2F0EB]/25" aria-hidden="true" />
-          </div>
-        </div>
+      <div className="hero__foot">
+        <p className="hero__piece">{brand.piece.name}</p>
+        <p className="hero__season">{brand.piece.season}</p>
+        <p className="hero__hint">Scroll</p>
+      </div>
     </section>
   );
 }

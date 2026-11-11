@@ -7,9 +7,10 @@ import { DURATION, EASE, gsap, prefersReducedMotion, ScrollTrigger } from '@/lib
 import { assetPath } from '@/lib/assets';
 
 /**
- * Section 4: FABRIC / CRAFT
- * Masked line-by-line headline reveal paired with macro cloth parallax
- * and a collapsible Construction Details drawer (specs tucked out of primary canvas).
+ * Section 3: CLOTH & TAILORING (THE ONE LIGHT BONE SECTION)
+ * Warm bone ground (#EDE8DF) paired with obsidian ink (#0B0B0A), muted stone (#6E695F / #5E5950),
+ * sentence-case Instrument Serif headline, sculptural travertine/twill photography,
+ * and a single restrained editorial statement.
  */
 export function FabricCraftSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -31,7 +32,7 @@ export function FabricCraftSection() {
             yPercent: 0,
             opacity: 1,
             duration: DURATION.base,
-            stagger: 0.085,
+            stagger: 0.09,
             ease: EASE.expoOut,
             scrollTrigger: {
               trigger: headlineBlockRef.current,
@@ -45,7 +46,7 @@ export function FabricCraftSection() {
       if (macroFrameRef.current) {
         gsap.fromTo(
           macroFrameRef.current,
-          { clipPath: 'inset(14% 0% 0% 0%)' },
+          { clipPath: 'inset(12% 0% 0% 0%)' },
           {
             clipPath: 'inset(0% 0% 0% 0%)',
             duration: DURATION.slow,
@@ -62,16 +63,16 @@ export function FabricCraftSection() {
       if (macroMediaRef.current && macroFrameRef.current) {
         gsap.fromTo(
           macroMediaRef.current,
-          { yPercent: -7, scale: 1.15 },
+          { yPercent: -4, scale: 1.14 },
           {
-            yPercent: 7,
-            scale: 1,
+            yPercent: 4,
+            scale: 1.08,
             ease: 'none',
             scrollTrigger: {
               trigger: macroFrameRef.current,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: 0.45,
+              scrub: 0.5,
             },
           }
         );
@@ -90,27 +91,23 @@ export function FabricCraftSection() {
     <section
       id="fabric-craft"
       ref={sectionRef}
-      aria-label="Fabric Material and Tailoring"
-      className="relative w-full border-t border-[#F2F0EB]/12 bg-[#0A0A0A] text-[#F2F0EB]"
+      aria-label="Cloth and tailoring"
+      className="relative w-full bg-[#EDE8DF] text-[#0B0B0A]"
       style={{
-        padding: 'clamp(6rem, 16vh, 11rem) var(--gutter)',
+        padding: 'clamp(4.5rem, 10vh, 7.5rem) var(--gutter)',
       }}
     >
-      {/* Minimal Top Label */}
-      <div className="mb-10 border-b border-[#F2F0EB]/12 pb-4 sm:mb-14">
-        <span className="text-xs uppercase tracking-[0.12em] text-[#9A9790]">
-          {craft.label}
-        </span>
+      <div className="mb-8 border-b border-[#0B0B0A]/14 pb-4 sm:mb-10">
+        <span className="text-[14px] tracking-[0.04em] text-[#5E5950]">{craft.label}</span>
       </div>
 
-      {/* Masked Line-by-Line Headline */}
-      <div ref={headlineBlockRef} className="max-w-6xl">
-        <h2 className="font-display text-[clamp(1.65rem,4.35vw,4.35rem)] font-semibold uppercase leading-[0.98] tracking-[-0.015em]">
+      <div ref={headlineBlockRef} className="max-w-5xl">
+        <h2 className="display text-[clamp(2.5rem,5.4vw,5.4rem)] leading-[0.95] tracking-[-0.025em]">
           {craft.headlineLines.map((line, i) => (
             <span key={line} className="block overflow-hidden pb-1">
               <span
                 data-craft-line
-                className={`block ${i === 1 ? 'text-[#9A9790]' : 'text-[#F2F0EB]'}`}
+                className={`block ${i === 1 ? 'text-[#6E695F]' : 'text-[#0B0B0A]'}`}
               >
                 {line}
               </span>
@@ -119,13 +116,11 @@ export function FabricCraftSection() {
         </h2>
       </div>
 
-      {/* Editorial Grid: Left Macro Parallax Textile | Right Concise Line + Details Drawer */}
-      <div className="mt-12 grid grid-cols-1 items-start gap-10 md:mt-16 md:grid-cols-12 md:gap-12">
-        <div className="md:col-span-7">
+      <div className="mt-10 grid grid-cols-1 items-end gap-8 md:mt-12 md:grid-cols-12 md:gap-12">
+        <div className="md:col-span-6">
           <div
             ref={macroFrameRef}
-            data-cursor="ZOOM"
-            className="group relative aspect-[4/4.2] max-h-[72vh] w-full overflow-hidden bg-[#121212]"
+            className="relative aspect-[4/3] max-h-[54vh] w-full overflow-hidden bg-[#DFD8CC]"
           >
             <div ref={macroMediaRef} className="relative h-full w-full will-change-transform">
               <Image
@@ -133,36 +128,17 @@ export function FabricCraftSection() {
                 alt={craft.macroAlt}
                 fill
                 loading="lazy"
-                sizes="(max-width: 768px) 92vw, 56vw"
-                className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+                sizes="(max-width: 768px) 92vw, 48vw"
+                className="object-cover"
               />
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col justify-between md:col-span-5 md:pt-4">
-          <p className="text-[19px] leading-relaxed text-[#F2F0EB]/90 sm:text-[21px] sm:leading-[1.45]">
+        <div className="md:col-span-5 md:col-start-8 md:pb-2">
+          <p className="max-w-[34ch] text-[18px] leading-[1.6] text-[#0B0B0A]/86 sm:text-[20px]">
             {craft.statement}
           </p>
-
-          <details className="mt-9 border-y border-[#F2F0EB]/14 py-4">
-            <summary className="flex cursor-pointer items-center justify-between text-[13px] font-medium uppercase tracking-[0.12em] text-[#F2F0EB]/88 transition-colors hover:text-[#F2F0EB] sm:text-sm">
-              <span>{craft.detailsDrawerLabel}</span>
-              <span aria-hidden="true" className="text-base text-[#9A9790]">
-                +
-              </span>
-            </summary>
-            <dl className="mt-4 divide-y divide-[#F2F0EB]/10 border-t border-[#F2F0EB]/10">
-              {craft.specs.map((spec) => (
-                <div key={spec.label} className="flex flex-col gap-1 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-                  <dt className="text-xs uppercase tracking-[0.1em] text-[#9A9790]">
-                    {spec.label}
-                  </dt>
-                  <dd className="text-[15px] text-[#F2F0EB]/88 sm:text-right">{spec.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </details>
         </div>
       </div>
     </section>

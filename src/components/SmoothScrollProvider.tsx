@@ -86,7 +86,7 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   );
 
   const [lenis, setLenis] = useState<Lenis | null>(null);
-  const [isPreloaded, setIsPreloaded] = useState(false);
+  const [isPreloaded, setIsPreloaded] = useState(true);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isCartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -132,15 +132,13 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       return () => window.removeEventListener('scroll', onNativeScroll);
     }
 
+    // lerp 0.08 = heavier, measured quiet-luxury scroll inertia
     const instance = new Lenis({
-      lerp: 0.085,
+      lerp: 0.08,
       smoothWheel: true,
-      wheelMultiplier: 0.95,
-      touchMultiplier: 1.15,
     });
 
     lenisRef.current = instance;
-    instance.stop();
 
     const rafId = requestAnimationFrame(() => {
       setLenis(instance);

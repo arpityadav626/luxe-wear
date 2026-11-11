@@ -1,31 +1,48 @@
 /**
- * Design tokens for LUXE WEAR.
- * Quiet-luxury monochrome palette (#0A0A0A / #F2F0EB) with restrained single accent (#C8FF3D).
+ * Design tokens for Luxe Wear.
+ * Quiet-luxury palette (#0B0B0A / #EDE8DF / #8A857B / #B8A27A).
  */
 :root {
-  --c-bg: #0a0a0a;
-  --c-surface: #121212;
-  --c-surface-elevated: #181818;
-  --c-fg: #f2f0eb;
-  --c-muted: #9a9790;
-  --c-line: rgba(242, 240, 235, 0.12);
-  --c-line-strong: rgba(242, 240, 235, 0.24);
-  --c-accent: #c8ff3d;
-  --c-accent-ink: #0a0a0a;
+  --bg: #0b0b0a;
+  --fg: #ede8df;
+  --muted: #8a857b;
+  --accent: #b8a27a;
+  --line: rgba(237, 232, 223, 0.12);
 
-  --f-display: var(--font-clash-display), system-ui, sans-serif;
-  --f-sans: var(--font-satoshi), system-ui, sans-serif;
+  /* Compatibility aliases consumed by existing sections */
+  --c-bg: var(--bg);
+  --c-surface: #121210;
+  --c-surface-elevated: #181816;
+  --c-fg: var(--fg);
+  --c-muted: var(--muted);
+  --c-line: var(--line);
+  --c-line-strong: rgba(237, 232, 223, 0.24);
+  --c-accent: var(--accent);
+  --c-accent-ink: var(--bg);
 
-  --gutter: clamp(1.25rem, 3vw, 3rem);
-  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --f-display: var(--font-display), 'Times New Roman', serif;
+  --f-sans: var(--font-body), system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expo: var(--ease);
   --ease-power3: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --gutter: 4vw;
+
+  /* 8px spacing scale */
+  --s1: 8px;
+  --s2: 16px;
+  --s3: 24px;
+  --s4: 48px;
+  --s5: 96px;
+  --s6: 160px;
 
   --z-bg: 0;
   --z-hero-type: 1;
   --z-garment: 2;
   --z-hero-ui: 10;
-  --z-nav: 40;
+  --z-nav: 50;
   --z-drawer: 60;
-  --z-cursor: 80;
+  --z-cursor: 300;
   --z-preloader: 90;
 }

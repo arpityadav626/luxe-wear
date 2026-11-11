@@ -1,9 +1,9 @@
 import { HeroSection } from '@/sections/HeroSection';
 import { PinnedStorySection } from '@/sections/PinnedStorySection';
 import { FabricCraftSection } from '@/sections/FabricCraftSection';
+import { FullBleedSection } from '@/sections/FullBleedSection';
 import { HorizontalCollectionSection } from '@/sections/HorizontalCollectionSection';
 import { LookbookSection } from '@/sections/LookbookSection';
-import { ValuesSection } from '@/sections/ValuesSection';
 import { DropCtaSection } from '@/sections/DropCtaSection';
 import { FooterSection } from '@/sections/FooterSection';
 
@@ -13,9 +13,9 @@ export default function HomePage() {
       <HeroSection />
       <PinnedStorySection />
       <FabricCraftSection />
+      <FullBleedSection />
       <HorizontalCollectionSection />
       <LookbookSection />
-      <ValuesSection />
       <DropCtaSection />
       <FooterSection />
     </>

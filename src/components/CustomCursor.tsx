@@ -1,87 +1,102 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { gsap, isTouchDevice, prefersReducedMotion } from '@/lib/gsap';
+// Quiet cursor: an 8px difference dot everywhere on fine pointers.
+// A 72px ring + label appears ONLY over elements that opt in with [data-cursor].
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { prefersReducedMotion } from '@/lib/gsap';
 
-/**
- * Custom magnetic cursor follower.
- * Starts as a minimal off-white dot and expands into a crisp circle with action label
- * ("VIEW", "EXPLORE", "BAG", "JOIN") over interactive [data-cursor] elements.
- */
 export function CustomCursor() {
-  const rootRef = useRef<HTMLDivElement>(null);
-  const [label, setLabel] = useState<string>('');
-  const [visible, setVisible] = useState(false);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (isTouchDevice() || prefersReducedMotion()) return;
-    const el = rootRef.current;
-    if (!el) return;
+    if (
+      typeof window === 'undefined' ||
+      !window.matchMedia('(pointer: fine)').matches ||
+      prefersReducedMotion()
+    ) {
+      return;
+    }
 
-    document.documentElement.classList.add('custom-cursor-enabled');
+    const d = dotRef.current;
+    const r = ringRef.current;
+    const l = labelRef.current;
+    if (!d || !r || !l) return;
 
-    const moveX = gsap.quickTo(el, 'x', { duration: 0.28, ease: 'power3.out' });
-    const moveY = gsap.quickTo(el, 'y', { duration: 0.28, ease: 'power3.out' });
+    document.documentElement.classList.add('has-cursor');
+    gsap.set([d, r], { xPercent: -50, yPercent: -50 });
+    gsap.set(d, { opacity: 0 });
+    gsap.set(r, { opacity: 0, scale: 0 });
 
-    const onPointerMove = (e: PointerEvent) => {
-      if (!visible) setVisible(true);
-      moveX(e.clientX);
-      moveY(e.clientY);
+    const dx = gsap.quickTo(d, 'x', { duration: 0.12, ease: 'power3' });
+    const dy = gsap.quickTo(d, 'y', { duration: 0.12, ease: 'power3' });
+    const rx = gsap.quickTo(r, 'x', { duration: 0.5, ease: 'power3' });
+    const ry = gsap.quickTo(r, 'y', { duration: 0.5, ease: 'power3' });
 
+    let shown = false;
+    let active = false;
+
+    const move = (e: MouseEvent) => {
+      if (!shown) {
+        shown = true;
+        gsap.set([d, r], { x: e.clientX, y: e.clientY });
+        gsap.to(d, { opacity: 1, duration: 0.4 });
+      }
+      dx(e.clientX);
+      dy(e.clientY);
+      rx(e.clientX);
+      ry(e.clientY);
+    };
+
+    const over = (e: MouseEvent) => {
       const target =
         e.target instanceof Element ? e.target.closest<HTMLElement>('[data-cursor]') : null;
-      const nextLabel = target?.dataset.cursor?.trim() ?? '';
-      setLabel((prev) => (prev === nextLabel ? prev : nextLabel));
+      if (target) {
+        const text = target.dataset.cursor?.trim() ?? '';
+        if (text) {
+          l.textContent = text;
+        }
+        if (!active) {
+          active = true;
+          gsap.to(r, { scale: 1, opacity: 1, duration: 0.6, ease: 'expo.out' });
+          gsap.to(d, { scale: 0, duration: 0.3 });
+        }
+      } else if (active) {
+        active = false;
+        gsap.to(r, { scale: 0, opacity: 0, duration: 0.5, ease: 'expo.out' });
+        gsap.to(d, { scale: 1, duration: 0.3 });
+      }
     };
 
-    const onPointerLeave = () => {
-      setVisible(false);
-      setLabel('');
+    const hide = () => gsap.to([d, r], { opacity: 0, duration: 0.3 });
+    const show = () => {
+      if (shown) {
+        gsap.to(d, { opacity: active ? 0 : 1, duration: 0.3 });
+      }
     };
 
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    document.addEventListener('mouseleave', onPointerLeave);
+    window.addEventListener('mousemove', move, { passive: true });
+    document.addEventListener('mouseover', over);
+    document.documentElement.addEventListener('mouseleave', hide);
+    document.documentElement.addEventListener('mouseenter', show);
 
     return () => {
-      document.documentElement.classList.remove('custom-cursor-enabled');
-      window.removeEventListener('pointermove', onPointerMove);
-      document.removeEventListener('mouseleave', onPointerLeave);
+      window.removeEventListener('mousemove', move);
+      document.removeEventListener('mouseover', over);
+      document.documentElement.removeEventListener('mouseleave', hide);
+      document.documentElement.removeEventListener('mouseenter', show);
+      document.documentElement.classList.remove('has-cursor');
     };
-  }, [visible]);
-
-  const isExpanded = label.length > 0;
+  }, []);
 
   return (
-    <div
-      ref={rootRef}
-      aria-hidden="true"
-      className="pointer-events-none fixed left-0 top-0 hidden md:block"
-      style={{
-        zIndex: 'var(--z-cursor)',
-        opacity: visible ? 1 : 0,
-        transition: 'opacity 0.22s ease',
-      }}
-    >
-      <div
-        className="flex items-center justify-center rounded-full border transition-[width,height,background-color,border-color,backdrop-filter] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-        style={{
-          transform: 'translate(-50%, -50%)',
-          width: isExpanded ? '76px' : '14px',
-          height: isExpanded ? '76px' : '14px',
-          backgroundColor: isExpanded ? 'rgba(10, 10, 10, 0.45)' : 'rgba(242, 240, 235, 0.94)',
-          borderWidth: isExpanded ? '1.5px' : '1px',
-          borderColor: isExpanded ? '#F2F0EB' : 'rgba(242, 240, 235, 0.9)',
-          backdropFilter: isExpanded ? 'blur(8px)' : 'none',
-          boxShadow: isExpanded ? '0 0 24px rgba(242, 240, 235, 0.14)' : 'none',
-        }}
-      >
-        <span
-          className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#F2F0EB] transition-opacity duration-200"
-          style={{ opacity: isExpanded ? 1 : 0 }}
-        >
-          {label}
-        </span>
+    <>
+      <div ref={dotRef} className="cursor-dot" aria-hidden="true" />
+      <div ref={ringRef} className="cursor-ring" aria-hidden="true">
+        <span ref={labelRef} className="cursor-label" />
       </div>
-    </div>
+    </>
   );
 }

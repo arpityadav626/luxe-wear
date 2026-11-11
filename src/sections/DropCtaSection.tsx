@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { brandConfig } from '@/lib/brand.config';
 import { DURATION, EASE, gsap, prefersReducedMotion, ScrollTrigger } from '@/lib/gsap';
-import { MagneticButton } from '@/components/MagneticButton';
 
 /**
- * Section 8: CTA ("Join the next drop")
- * Clean underline email input + single signature electric-lime (#C8FF3D) magnetic CTA.
+ * Section 7: CTA ("Join the next drop.")
+ * Quiet-luxury sentence-case serif headline + clean underline email input +
+ * single hairline outlined CTA that fills cleanly on hover (#EDE8DF / #0B0B0A).
  */
 export function DropCtaSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -90,24 +90,21 @@ export function DropCtaSection() {
     <section
       id="drop-cta"
       ref={sectionRef}
-      aria-label="Join Next Drop"
-      className="relative w-full border-t border-[#F2F0EB]/12 bg-[#0D0D10] text-[#F2F0EB]"
+      aria-label="Join the next drop"
+      className="relative w-full border-t border-[#EDE8DF]/12 bg-[#0D0D10] text-[#EDE8DF]"
       style={{
-        padding: 'clamp(6.5rem, 18vh, 12rem) var(--gutter)',
+        padding: 'clamp(6.5rem, 17vh, 11.5rem) var(--gutter)',
       }}
     >
       <div className="grid grid-cols-1 items-end gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-6">
           <h2
             ref={headingRef}
-            className="font-display text-[clamp(2.4rem,6.5vw,6rem)] font-semibold uppercase leading-[0.9] tracking-[-0.015em]"
+            className="display text-[clamp(2.8rem,6.5vw,6.2rem)] leading-[0.94] tracking-[-0.025em]"
           >
             {cta.headlineLines.map((line) => (
               <span key={line} className="block overflow-hidden pb-1">
-                <span
-                  data-cta-line
-                  className="block text-[#F2F0EB]"
-                >
+                <span data-cta-line className="block text-[#EDE8DF]">
                   {line}
                 </span>
               </span>
@@ -116,7 +113,7 @@ export function DropCtaSection() {
         </div>
 
         <div ref={formWrapRef} className="lg:col-span-6">
-          <p className="max-w-lg text-base leading-relaxed text-[#F2F0EB]/86 sm:text-[18px]">
+          <p className="max-w-lg text-[17px] leading-[1.6] text-[#EDE8DF]/84 sm:text-[18px]">
             {cta.subtitle}
           </p>
 
@@ -124,16 +121,16 @@ export function DropCtaSection() {
             <div
               role="status"
               aria-live="polite"
-              className="mt-8 border border-[#F2F0EB]/20 bg-[#121212] p-6"
+              className="mt-8 border border-[#EDE8DF]/20 bg-[#121210] p-6"
             >
-              <p className="text-xs uppercase tracking-[0.12em] text-[#C8FF3D]">
+              <p className="text-[14px] tracking-[0.04em] text-[#B8A27A]">
                 Registered · {submittedEmail}
               </p>
-              <p className="mt-2 text-[15px] text-[#F2F0EB]/88">{cta.successMessage}</p>
+              <p className="mt-2 text-[15px] text-[#EDE8DF]/88">{cta.successMessage}</p>
               <button
                 type="button"
                 onClick={() => setSubmittedEmail(null)}
-                className="mt-4 text-[13px] uppercase tracking-[0.1em] text-[#9A9790] underline underline-offset-4 hover:text-[#F2F0EB]"
+                className="mt-4 text-[14px] tracking-[0.04em] text-[#8A857B] underline underline-offset-4 hover:text-[#EDE8DF]"
               >
                 Use another email
               </button>
@@ -156,25 +153,22 @@ export function DropCtaSection() {
                       if (errorMsg) setErrorMsg(null);
                     }}
                     placeholder={cta.placeholder}
-                    className="w-full border-b border-[#F2F0EB]/28 bg-transparent py-3.5 text-base tracking-[0.02em] text-[#F2F0EB] placeholder:text-[#9A9790] focus:border-[#F2F0EB] focus:outline-none"
+                    className="w-full border-b border-[#EDE8DF]/28 bg-transparent py-3.5 text-base tracking-[0.02em] text-[#EDE8DF] placeholder:text-[#8A857B] focus:border-[#EDE8DF] focus:outline-none"
                   />
                 </div>
 
-                {/* Intentional primary Electric-Lime CTA */}
-                <MagneticButton strength={0.28} className="self-start sm:self-auto">
-                  <button
-                    type="submit"
-                    data-cursor="JOIN"
-                    className="inline-flex shrink-0 items-center gap-3 rounded-full bg-[#C8FF3D] px-7 py-3.5 text-sm font-medium uppercase tracking-[0.1em] text-[#0A0A0A] transition-colors duration-300 hover:bg-[#F2F0EB]"
-                  >
-                    <span>{cta.buttonLabel}</span>
-                    <span aria-hidden="true">→</span>
-                  </button>
-                </MagneticButton>
+                {/* Quiet-luxury outlined rectangular button: fills solid on hover */}
+                <button
+                  type="submit"
+                  className="inline-flex shrink-0 self-start items-center gap-3 border border-[#EDE8DF]/38 bg-transparent px-7 py-3.5 text-[14px] tracking-[0.04em] text-[#EDE8DF] transition-colors duration-300 hover:border-[#EDE8DF] hover:bg-[#EDE8DF] hover:text-[#0B0B0A] sm:self-auto"
+                >
+                  <span>{cta.buttonLabel}</span>
+                  <span aria-hidden="true">→</span>
+                </button>
               </div>
 
               {errorMsg && (
-                <p role="alert" className="text-[15px] text-[#F2F0EB]">
+                <p role="alert" className="text-[15px] text-[#EDE8DF]">
                   {errorMsg}
                 </p>
               )}

@@ -5,105 +5,47 @@ import Image from 'next/image';
 import { brandConfig, type CapsuleProduct } from '@/lib/brand.config';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { assetPath } from '@/lib/assets';
-import { useAppState } from '@/components/SmoothScrollProvider';
+import { ProductViewModal } from '@/components/ProductViewModal';
 
-function CollectionProductCard({ product }: { product: CapsuleProduct }) {
-  const [swatchIdx, setSwatchIdx] = useState(0);
-  const { addToCart } = useAppState();
-
-  const activeSwatch = product.swatches[swatchIdx] ?? product.swatches[0];
-
-  const handleQuickAdd = () => {
-    addToCart({
-      id: `${product.id}-${activeSwatch.name.toLowerCase().replace(/\s+/g, '-')}`,
-      code: product.code,
-      name: `${product.name} · ${activeSwatch.name}`,
-      size: 'M',
-      price: product.price,
-      image: assetPath(product.image),
-    });
-  };
-
+function CollectionProductCard({
+  product,
+  onSelect,
+}: {
+  product: CapsuleProduct;
+  onSelect: (p: CapsuleProduct) => void;
+}) {
   return (
     <article
-      className="group flex w-[80vw] max-w-[340px] shrink-0 snap-center flex-col justify-between md:w-[28vw] md:min-w-[300px] md:max-w-[430px] md:snap-none"
+      className="group flex w-[80vw] max-w-[340px] shrink-0 snap-center flex-col justify-between md:w-[29vw] md:min-w-[310px] md:max-w-[440px] md:snap-none"
       aria-label={product.name}
     >
-      {/* Unified #0F0F0F Studio Container with mix-blend-lighten, Colorway Tint & Hover Add */}
-      <div
-        data-cursor="VIEW"
-        className="relative h-[40vh] min-h-[260px] max-h-[395px] w-full overflow-hidden border border-[#F2F0EB]/10 bg-[#0F0F0F] md:h-[45vh] md:min-h-[290px] md:max-h-[430px]"
+      {/* Unified #D8D3C9 Warm Stone Container — exclusively carries [data-cursor="View"] */}
+      <button
+        type="button"
+        onClick={() => onSelect(product)}
+        data-cursor="View"
+        aria-label={`View ${product.name}`}
+        className="relative aspect-[4/5] max-h-[48vh] w-full overflow-hidden bg-[#D8D3C9] text-left"
       >
         <Image
           src={assetPath(product.image)}
           alt={product.alt}
           fill
           loading="lazy"
-          sizes="(max-width: 768px) 80vw, 28vw"
-          className="object-cover object-center mix-blend-lighten transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06]"
+          sizes="(max-width: 768px) 80vw, 29vw"
+          className="object-contain object-center p-4 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
         />
+      </button>
 
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 mix-blend-color transition-colors duration-500"
-          style={{ backgroundColor: activeSwatch.tintOverlay }}
-        />
-
-        {/* Hover / Focus Add Action (always visible on touch/mobile so every device can add) */}
-        <button
-          type="button"
-          onClick={handleQuickAdd}
-          data-cursor="BAG"
-          className="absolute bottom-4 right-4 rounded-full border border-[#F2F0EB]/30 bg-[#0A0A0A]/85 px-4 py-2 text-[13px] font-medium uppercase tracking-[0.1em] text-[#F2F0EB] backdrop-blur-md transition-all duration-300 hover:border-[#F2F0EB] hover:bg-[#F2F0EB] hover:text-[#0A0A0A] md:pointer-events-none md:translate-y-1.5 md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:pointer-events-auto md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100"
-        >
-          Add (M)
-        </button>
-      </div>
-
-      {/* Editorial Meta & Larger Colorway Swatches (> 14px) */}
-      <div className="mt-4 flex flex-col gap-2.5 border-t border-[#F2F0EB]/12 pt-3.5">
+      {/* Pure Editorial Meta: Title, Price & Single Material Line (no swatches or buttons) */}
+      <div className="mt-4 flex flex-col gap-1 border-t border-[#0B0B0A]/14 pt-3.5">
         <div className="flex items-baseline justify-between gap-3">
-          <div>
-            <h3 className="font-display text-lg font-medium tracking-[-0.01em] text-[#F2F0EB] sm:text-xl">
-              {product.name}
-            </h3>
-            <p className="mt-0.5 text-[15px] text-[#9A9790]">{product.material}</p>
-          </div>
-          <span className="shrink-0 font-display text-lg font-medium tabular-nums text-[#F2F0EB] sm:text-xl">
+          <h3 className="display text-xl text-[#0B0B0A] sm:text-2xl">{product.name}</h3>
+          <span className="display shrink-0 text-lg tabular-nums text-[#0B0B0A] sm:text-xl">
             ${product.price}
           </span>
         </div>
-
-        <div className="flex items-center gap-3" role="group" aria-label={`Colorway for ${product.name}`}>
-          <div className="flex items-center gap-2">
-            {product.swatches.map((swatch, idx) => {
-              const isSelected = idx === swatchIdx;
-              return (
-                <button
-                  key={swatch.name}
-                  type="button"
-                  onClick={() => setSwatchIdx(idx)}
-                  onMouseEnter={() => setSwatchIdx(idx)}
-                  aria-label={`${swatch.name} colorway`}
-                  aria-pressed={isSelected}
-                  className={`relative flex h-7 w-7 items-center justify-center rounded-full border transition-transform duration-200 ${
-                    isSelected
-                      ? 'scale-105 border-[#F2F0EB]'
-                      : 'border-[#F2F0EB]/25 hover:scale-105'
-                  }`}
-                >
-                  <span
-                    className="h-4 w-4 rounded-full"
-                    style={{ backgroundColor: swatch.hex }}
-                  />
-                </button>
-              );
-            })}
-          </div>
-          <span className="text-xs uppercase tracking-[0.08em] text-[#9A9790]">
-            {activeSwatch.name}
-          </span>
-        </div>
+        <p className="text-[15px] text-[#5A554D]">{product.material}</p>
       </div>
     </article>
   );
@@ -111,8 +53,8 @@ function CollectionProductCard({ product }: { product: CapsuleProduct }) {
 
 /**
  * Section 5: HORIZONTAL SCROLL COLLECTION
- * Desktop: Pinned horizontal scroll across 5 distinct garments with right-side 01 / 05 progress.
- * Mobile / Reduced Motion: Clean non-pinned horizontal swipe carousel.
+ * Desktop: 3 large cards per screen across 5 garments with clean hairline progress bar.
+ * Clicking any garment image (`data-cursor="View"`) opens the minimal sizing sheet.
  */
 export function HorizontalCollectionSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -120,6 +62,7 @@ export function HorizontalCollectionSection() {
   const trackRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState<CapsuleProduct | null>(null);
 
   const products = brandConfig.collection.products;
 
@@ -192,62 +135,69 @@ export function HorizontalCollectionSection() {
   };
 
   return (
-    <section
-      id="collection"
-      ref={sectionRef}
-      aria-label="Capsule Collection"
-      className="relative flex w-full flex-col justify-between overflow-hidden border-t border-[#F2F0EB]/12 bg-[#0A0A0A] text-[#F2F0EB] md:h-[100dvh]"
-      style={{
-        paddingTop: 'clamp(5.2rem, 10vh, 6.25rem)',
-        paddingBottom: 'clamp(1.75rem, 4vh, 2.75rem)',
-      }}
-    >
-      {/* Top Row with Heading & Right Progress Counter (01 / 05) */}
-      <div className="px-[var(--gutter)]">
-        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#F2F0EB]/12 pb-3.5">
-          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1">
-            <span className="text-xs uppercase tracking-[0.1em] text-[#9A9790]">
-              {brandConfig.collection.label}
+    <>
+      <section
+        id="collection"
+        ref={sectionRef}
+        aria-label="Capsule collection"
+        className="relative flex w-full flex-col justify-between overflow-hidden border-t border-[#0B0B0A]/12 bg-[#E4DFD5] text-[#0B0B0A] md:h-[100dvh]"
+        style={{
+          paddingTop: 'clamp(4.75rem, 8.5vh, 5.75rem)',
+          paddingBottom: 'clamp(1.75rem, 4vh, 2.75rem)',
+        }}
+      >
+        <div className="px-[var(--gutter)]">
+          <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#0B0B0A]/14 pb-4">
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[14px] tracking-[0.04em] text-[#5A554D]">
+                {brandConfig.collection.label}
+              </span>
+              <h2 className="display text-[clamp(3.2rem,4.6vw,4.5rem)] leading-[0.95] tracking-[-0.025em] text-[#0B0B0A]">
+                {brandConfig.collection.heading}
+              </h2>
+            </div>
+            <span className="text-[14px] tracking-[0.04em] tabular-nums text-[#0B0B0A]/82">
+              0{activeIndex + 1} / 0{products.length}
             </span>
-            <h2 className="font-display text-2xl font-semibold uppercase tracking-[-0.015em] text-[#F2F0EB] sm:text-3xl">
-              {brandConfig.collection.heading}
-            </h2>
           </div>
-          <span className="text-xs uppercase tracking-[0.1em] tabular-nums text-[#F2F0EB]/88">
-            0{activeIndex + 1} / 0{products.length}
-          </span>
         </div>
-      </div>
 
-      {/* Horizontal Track (3 x 28vw cards cleanly span desktop viewport) */}
-      <div ref={wrapperRef} className="my-auto w-full overflow-hidden py-4 md:py-2" data-cursor="DRAG">
-        <div
-          ref={trackRef}
-          onScroll={handleMobileScroll}
-          className="no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-[var(--gutter)] px-[var(--gutter)] md:w-max md:snap-none md:gap-[2.2vw] md:overflow-visible md:px-[var(--gutter)]"
-        >
-          {products.map((product) => (
-            <CollectionProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </div>
-
-      {/* Bottom Meta + Right-aligned Progress Line */}
-      <div className="flex items-center justify-between gap-4 px-[var(--gutter)]">
-        <p className="hidden text-[15px] text-[#9A9790] md:block">
-          {brandConfig.collection.subtitle}
-        </p>
-        <span className="text-xs uppercase tracking-[0.1em] text-[#9A9790] md:hidden">
-          Swipe
-        </span>
-        <div className="h-[1px] w-full max-w-xs overflow-hidden bg-[#F2F0EB]/14">
+        {/* Horizontal Track: no data-cursor on outer strip; only product image buttons opt in */}
+        <div ref={wrapperRef} className="my-auto w-full overflow-hidden py-4 md:py-2">
           <div
-            ref={progressBarRef}
-            className="h-full w-full origin-left bg-[#F2F0EB]"
-            style={{ transform: 'scaleX(0.18)' }}
-          />
+            ref={trackRef}
+            onScroll={handleMobileScroll}
+            className="no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-[var(--gutter)] px-[var(--gutter)] md:w-max md:snap-none md:gap-[2vw] md:overflow-visible md:px-[var(--gutter)]"
+          >
+            {products.map((product) => (
+              <CollectionProductCard
+                key={product.id}
+                product={product}
+                onSelect={setSelectedProduct}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+
+        <div className="flex items-center justify-between gap-4 px-[var(--gutter)]">
+          <p className="hidden text-[15px] text-[#5A554D] md:block">
+            {brandConfig.collection.subtitle}
+          </p>
+          <span className="text-[14px] tracking-[0.04em] text-[#5A554D] md:hidden">Swipe</span>
+          <div className="h-[1px] w-full max-w-xs overflow-hidden bg-[#0B0B0A]/14">
+            <div
+              ref={progressBarRef}
+              className="h-full w-full origin-left bg-[#0B0B0A]"
+              style={{ transform: 'scaleX(0.18)' }}
+            />
+          </div>
+        </div>
+      </section>
+
+      <ProductViewModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
+    </>
   );
 }
