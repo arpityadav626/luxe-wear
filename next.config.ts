@@ -7,6 +7,7 @@ const basePath = isGitHubPages
   : "";
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["three"],
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },

@@ -1,27 +1,33 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { brandConfig } from '@/lib/brand.config';
 import { DURATION, EASE, gsap, prefersReducedMotion, ScrollTrigger } from '@/lib/gsap';
-import { assetPath } from '@/lib/assets';
-import { useAppState } from '@/components/SmoothScrollProvider';
+import { useAppState, useSmoothScrollContext } from '@/components/SmoothScrollProvider';
+
+const HeroGarmentCanvas = dynamic(
+  () => import('@/components/HeroGarmentCanvas').then((mod) => mod.HeroGarmentCanvas),
+  { ssr: false }
+);
 
 /**
  * Section 2: HERO
  * Pure atmospheric opening stage: giant spaced LUXE / WEAR display typography
- * behind a softly vignette-melted garment cutout (`/sequence/frame_0001.webp`).
+ * behind an interactive 3D obsidian tee (.glb) with pointer 360° orbit and
+ * scroll-linked depth transitions.
  */
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const topWordRef = useRef<HTMLSpanElement>(null);
   const bottomWordRef = useRef<HTMLSpanElement>(null);
-  const garmentRef = useRef<HTMLDivElement>(null);
   const introLine1Ref = useRef<HTMLSpanElement>(null);
   const introLine2Ref = useRef<HTMLSpanElement>(null);
   const captionRef = useRef<HTMLDivElement>(null);
+  const scrollProgressRef = useRef(0);
 
   const { isPreloaded } = useAppState();
+  const { reducedMotion } = useSmoothScrollContext();
 
   useEffect(() => {
     if (!isPreloaded) return;
@@ -64,24 +70,21 @@ export function HeroSection() {
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section || prefersReducedMotion()) return;
+    if (!section || prefersReducedMotion()) {
+      scrollProgressRef.current = 0;
+      return;
+    }
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        garmentRef.current,
-        { scale: 1, yPercent: 0 },
-        {
-          scale: 1.08,
-          yPercent: -6,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true,
-          },
-        }
-      );
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+        onUpdate: (self) => {
+          scrollProgressRef.current = self.progress;
+        },
+      });
 
       gsap.to(topWordRef.current, {
         yPercent: -22,
@@ -114,8 +117,6 @@ export function HeroSection() {
     };
   }, []);
 
-  const heroImageUrl = assetPath(brandConfig.sequence.heroImage);
-
   return (
     <section
       id="hero"
@@ -130,7 +131,7 @@ export function HeroSection() {
           style={{ zIndex: 'var(--z-bg)' }}
         />
 
-        {/* Giant Display Typography layered behind the garment */}
+        {/* Giant Display Typography layered behind the 3D garment */}
         <h1
           aria-label={brandConfig.brand.name}
           className="pointer-events-none absolute inset-x-0 top-0 bottom-[21vh] flex select-none flex-col justify-between px-[var(--gutter)] pt-[12.5vh] font-display text-[clamp(3.6rem,14.2vw,15rem)] font-bold uppercase leading-[0.86] tracking-[-0.015em] sm:bottom-[15vh] sm:pt-[11.5vh]"
@@ -156,40 +157,33 @@ export function HeroSection() {
           </span>
         </h1>
 
-        {/* Scaled (~1.6x) RGBA Transparent Garment Cutout + Radial Halo Glow */}
+        {/* Interactive 3D Obsidian Garment Stage + Radial Halo Glow */}
         <div
-          className="pointer-events-none relative mx-auto my-auto flex h-[58vh] min-h-[390px] max-h-[560px] w-[92vw] max-w-[460px] items-center justify-center sm:h-[80vh] sm:max-h-[820px] sm:w-[78vw] sm:max-w-[780px]"
+          className="pointer-events-auto relative mx-auto mb-auto mt-[10vh] flex h-[54vh] min-h-[370px] max-h-[540px] w-[90vw] max-w-[480px] items-center justify-center sm:my-auto sm:h-[80vh] sm:max-h-[820px] sm:w-[76vw] sm:max-w-[780px]"
           style={{ zIndex: 'var(--z-garment)' }}
         >
-          {/* Radial studio glow lifting obsidian twill off the black backdrop */}
+          {/* Radial studio glow lifting obsidian cloth off the black backdrop */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0"
             style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.085), transparent 60%)',
+              background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.11), transparent 62%)',
             }}
           />
 
-          <div
-            ref={garmentRef}
-            className="relative h-full w-full will-change-transform [-webkit-mask-image:radial-gradient(ellipse_90%_95%_at_50%_50%,#000_84%,transparent_100%)] [mask-image:radial-gradient(ellipse_90%_95%_at_50%_50%,#000_84%,transparent_100%)]"
-          >
-            <Image
-              src={heroImageUrl}
-              alt={brandConfig.sequence.heroAlt}
-              fill
-              priority
-              sizes="(max-width: 768px) 92vw, 780px"
-              className="object-contain object-center select-none drop-shadow-[0_24px_48px_rgba(0,0,0,0.65)]"
+          <div className="relative h-full w-full">
+            <HeroGarmentCanvas
+              scrollProgressRef={scrollProgressRef}
+              reducedMotion={reducedMotion}
             />
           </div>
         </div>
 
-        {/* Minimal Editorial Caption & Scroll Hairline */}
+        {/* Minimal Editorial Caption & Interaction Hint */}
         <div
           ref={captionRef}
           data-hero-intro
-          className="relative mt-auto flex w-full items-end justify-between gap-6"
+          className="pointer-events-none relative mt-auto flex w-full items-end justify-between gap-6"
           style={{
             zIndex: 'var(--z-hero-ui)',
             padding: '0 var(--gutter) clamp(1.5rem, 3.5vh, 2.5rem)',
@@ -205,7 +199,7 @@ export function HeroSection() {
           </div>
 
           <div className="hidden shrink-0 items-center gap-3 text-xs uppercase tracking-[0.12em] text-[#9A9790] sm:flex">
-            <span>Scroll</span>
+            <span>{brandConfig.hero.hint}</span>
             <span className="h-[1px] w-12 bg-[#F2F0EB]/25" aria-hidden="true" />
           </div>
         </div>

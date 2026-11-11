@@ -110,8 +110,10 @@ export const brandConfig = {
 
   hero: {
     label: 'Edition 01',
-    title: 'The Overshirt Shell',
-    subtitle: 'Structured silhouette shaped for effortless layering.',
+    modelPath: '/models/hero-garment.glb', // MIT base mesh adapted in obsidian matte knit + rear #C8FF3D stitch
+    title: 'Heavyweight Core Tee',
+    subtitle: 'Architectural drop-shoulder cut in matte obsidian cloth.',
+    hint: 'Drag 360° · Scroll',
   },
 
   /**
