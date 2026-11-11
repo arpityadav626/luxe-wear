@@ -1,19 +1,25 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { brandConfig } from '@/lib/brand.config';
 import { assetPath } from '@/lib/assets';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { useLenis } from '@/hooks/useLenis';
-import { SequenceCanvas } from '@/components/SequenceCanvas';
+import { useSmoothScrollContext } from '@/components/SmoothScrollProvider';
+
+const GarmentDetailsCanvas = dynamic(
+  () => import('@/components/GarmentDetailsCanvas').then((mod) => mod.GarmentDetailsCanvas),
+  { ssr: false }
+);
 
 /**
  * Section 3: PINNED STORY (Core Section)
  * Desktop: ScrollTrigger pins the stage, subtly shifts surface tone between stages,
- * scrubs a 60-frame turntable image sequence on <canvas>, crossfades separate macro
- * detail photographs (Collar, Closure, Stitching, Weave), and transitions ONE unified
- * editorial copy block + collapsible Details drawer.
+ * transitions the live 3D macro garment inspection camera across Collar, Closure,
+ * Stitching, and Weave (with free 360° pointer orbit), crossfades reference macro
+ * photography, and reveals ONE unified editorial copy block + Details drawer.
  * Mobile / Reduced Motion: Unpinned interactive stage selector.
  */
 export function PinnedStorySection() {
@@ -28,6 +34,7 @@ export function PinnedStorySection() {
   const storyProgressRef = useRef<number>(0);
   const [activeStage, setActiveStage] = useState<number>(0);
   const { scrollTo } = useLenis();
+  const { reducedMotion } = useSmoothScrollContext();
 
   const stages = brandConfig.storyStages;
   const currentStage = stages[activeStage] ?? stages[0];
@@ -217,22 +224,21 @@ export function PinnedStorySection() {
             </div>
           </div>
 
-          {/* Scroll-Scrubbed 0° -> 40° -> 90° -> 180° RGBA Sequence Canvas over Soft Radial Pedestal */}
-          <div className="order-1 relative h-[36vh] min-h-[260px] w-full shrink-0 md:order-2 md:h-[72vh] md:min-w-0 md:flex-1">
+          {/* Live 3D Macro Detail Inspection Canvas over Soft Radial Pedestal */}
+          <div className="order-1 relative h-[38vh] min-h-[270px] w-full shrink-0 md:order-2 md:h-[72vh] md:min-w-0 md:flex-1">
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0"
               style={{
-                background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.085), transparent 60%)',
+                background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.095), transparent 60%)',
               }}
             />
-            <div
-              data-cursor="DRAG"
-              className="relative h-full w-full"
-            >
-              <SequenceCanvas
+            <div className="relative h-full w-full">
+              <GarmentDetailsCanvas
+                activeStage={activeStage}
                 progressRef={storyProgressRef}
-                activeProgress={stages[activeStage].progressStop}
+                fallbackProgress={stages[activeStage].progressStop}
+                reducedMotion={reducedMotion}
               />
             </div>
           </div>

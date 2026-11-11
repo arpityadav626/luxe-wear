@@ -1,7 +1,6 @@
 'use client';
 
 import React, {
-  Component,
   Suspense,
   useCallback,
   useEffect,
@@ -9,36 +8,24 @@ import React, {
   useRef,
   useState,
   type MutableRefObject,
-  type ReactNode,
 } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Environment, Lightformer, OrbitControls, useGLTF } from '@react-three/drei';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { OrbitControls, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import Image from 'next/image';
 import { brandConfig } from '@/lib/brand.config';
 import { assetPath } from '@/lib/assets';
+import {
+  disposeGarmentMaterials,
+  GarmentStudioLighting,
+  GarmentWebGLErrorBoundary,
+  prepareDetailedGarment,
+  supportsWebGL,
+} from '@/components/GarmentStageRig';
 
 interface HeroGarmentCanvasProps {
   scrollProgressRef: MutableRefObject<number>;
   reducedMotion?: boolean;
-}
-
-class WebGLErrorBoundary extends Component<
-  { fallback: ReactNode; children: ReactNode },
-  { hasError: boolean }
-> {
-  state = { hasError: false };
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback;
-    }
-    return this.props.children;
-  }
 }
 
 function ObsidianGarmentMesh({
@@ -53,64 +40,33 @@ function ObsidianGarmentMesh({
   onReady: () => void;
 }) {
   const { scene } = useGLTF(modelUrl);
+  const gl = useThree((s) => s.gl);
+  const camera = useThree((s) => s.camera);
+  const threeScene = useThree((s) => s.scene);
   const spinGroupRef = useRef<THREE.Group>(null);
   const breathRef = useRef<number>(0);
+  const [shaderReady, setShaderReady] = useState(false);
 
-  const normalizedModel = useMemo(() => {
-    const clone = scene.clone(true);
-    clone.updateMatrixWorld(true);
-
-    const box = new THREE.Box3().setFromObject(clone);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    const scale = 2.08 / maxDim;
-
-    clone.scale.setScalar(scale);
-    clone.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
-
-    clone.traverse((child) => {
-      if (!(child instanceof THREE.Mesh)) return;
-      child.castShadow = false;
-      child.receiveShadow = false;
-
-      const srcMat = child.material as THREE.MeshStandardMaterial | undefined;
-      if (srcMat && srcMat.isMeshStandardMaterial) {
-        const clothMat = new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color('#FFFFFF'),
-          map: srcMat.map ?? null,
-          normalMap: srcMat.normalMap ?? null,
-          normalScale: new THREE.Vector2(0.9, 0.9),
-          roughnessMap: srcMat.roughnessMap ?? null,
-          metalnessMap: srcMat.metalnessMap ?? null,
-          roughness: 0.88,
-          metalness: 0.0,
-          specularIntensity: 0.22,
-          sheen: 0.34,
-          sheenRoughness: 0.82,
-          sheenColor: new THREE.Color('#6F737C'),
-          envMapIntensity: 0.52,
-          side: THREE.DoubleSide,
-        });
-        child.material = clothMat;
-      }
-    });
-
-    return clone;
-  }, [scene]);
+  const normalizedModel = useMemo(
+    () => prepareDetailedGarment(scene, { enableEnvironment: false }),
+    [scene]
+  );
 
   useEffect(() => {
-    const rafId = requestAnimationFrame(() => onReady());
-    return () => {
-      cancelAnimationFrame(rafId);
-      normalizedModel.traverse((child) => {
-        if (child instanceof THREE.Mesh && child.material) {
-          const mats = Array.isArray(child.material) ? child.material : [child.material];
-          mats.forEach((m) => m.dispose());
-        }
+    let cancelled = false;
+    gl.compileAsync(normalizedModel, camera, threeScene)
+      .catch(() => undefined)
+      .finally(() => {
+        if (cancelled) return;
+        setShaderReady(true);
+        onReady();
       });
+
+    return () => {
+      cancelled = true;
+      disposeGarmentMaterials(normalizedModel);
     };
-  }, [normalizedModel, onReady]);
+  }, [gl, camera, threeScene, normalizedModel, onReady]);
 
   useFrame((_, rawDelta) => {
     const group = spinGroupRef.current;
@@ -139,7 +95,7 @@ function ObsidianGarmentMesh({
   });
 
   return (
-    <group ref={spinGroupRef} rotation={[0.04, 0.22, 0]}>
+    <group ref={spinGroupRef} visible={shaderReady} rotation={[0.04, 0.22, 0]}>
       <primitive object={normalizedModel} />
     </group>
   );
@@ -160,20 +116,6 @@ function HeroFallbackPoster() {
   );
 }
 
-function supportsWebGL(): boolean {
-  if (typeof document === 'undefined') return true;
-  try {
-    const testCanvas = document.createElement('canvas');
-    return Boolean(
-      testCanvas.getContext('webgl2') ||
-        testCanvas.getContext('webgl') ||
-        testCanvas.getContext('experimental-webgl')
-    );
-  } catch {
-    return false;
-  }
-}
-
 export function HeroGarmentCanvas({
   scrollProgressRef,
   reducedMotion = false,
@@ -181,11 +123,25 @@ export function HeroGarmentCanvas({
   const modelUrl = assetPath(brandConfig.hero.modelPath);
   const stageWrapRef = useRef<HTMLDivElement>(null);
   const [modelReady, setModelReady] = useState(false);
+  const [inView, setInView] = useState(true);
   const [webglFailed, setWebglFailed] = useState(() => !supportsWebGL());
 
   useEffect(() => {
     useGLTF.preload(modelUrl);
   }, [modelUrl]);
+
+  useEffect(() => {
+    const el = stageWrapRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry) setInView(entry.isIntersecting);
+      },
+      { rootMargin: '250px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const rafId = requestAnimationFrame(() => {
@@ -206,7 +162,7 @@ export function HeroGarmentCanvas({
   }
 
   return (
-    <WebGLErrorBoundary fallback={<HeroFallbackPoster />}>
+    <GarmentWebGLErrorBoundary fallback={<HeroFallbackPoster />}>
       <div
         ref={stageWrapRef}
         role="img"
@@ -218,6 +174,8 @@ export function HeroGarmentCanvas({
         style={{ touchAction: 'pan-y' }}
       >
         <Canvas
+          fallback={<HeroFallbackPoster />}
+          frameloop={inView ? 'always' : 'demand'}
           dpr={[1, 2]}
           camera={{ position: [0, 0.02, 4.35], fov: 34, near: 0.1, far: 50 }}
           gl={{
@@ -229,6 +187,7 @@ export function HeroGarmentCanvas({
           }}
           style={{ background: 'transparent', touchAction: 'pan-y' }}
           onCreated={({ gl }) => {
+            gl.debug.checkShaderErrors = false;
             gl.setClearColor(0x000000, 0);
             gl.domElement.addEventListener(
               'webglcontextlost',
@@ -240,38 +199,7 @@ export function HeroGarmentCanvas({
             );
           }}
         >
-          <ambientLight intensity={0.34} />
-          <directionalLight position={[2.4, 2.8, 3.6]} intensity={2.75} color="#F5F3EE" />
-          <directionalLight position={[-3.6, 2.0, -2.4]} intensity={2.25} color="#EAECEF" />
-          <directionalLight position={[3.5, 1.4, -2.4]} intensity={1.75} color="#F0EEE9" />
-          <directionalLight position={[-0.6, -1.8, 2.8]} intensity={0.68} color="#DCDAD4" />
-
-          <Environment resolution={128}>
-            <Lightformer
-              form="rect"
-              intensity={1.1}
-              color="#F5F3EE"
-              scale={[6, 2, 1]}
-              position={[0, 4, 2]}
-              rotation={[Math.PI / 2.4, 0, 0]}
-            />
-            <Lightformer
-              form="rect"
-              intensity={1.3}
-              color="#E8EAEE"
-              scale={[3, 6, 1]}
-              position={[-4, 1, -2]}
-              rotation={[0, Math.PI / 3, 0]}
-            />
-            <Lightformer
-              form="rect"
-              intensity={1.0}
-              color="#EFECE6"
-              scale={[3, 5, 1]}
-              position={[4, 0.5, -2]}
-              rotation={[0, -Math.PI / 3, 0]}
-            />
-          </Environment>
+          <GarmentStudioLighting enableEnvironment={false} />
 
           <Suspense fallback={null}>
             <ObsidianGarmentMesh
@@ -294,6 +222,6 @@ export function HeroGarmentCanvas({
           />
         </Canvas>
       </div>
-    </WebGLErrorBoundary>
+    </GarmentWebGLErrorBoundary>
   );
 }

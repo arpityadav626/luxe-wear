@@ -123,9 +123,9 @@ export const brandConfig = {
     {
       id: 'collar',
       label: 'Collar',
-      title: 'Structured Stand Collar',
-      description: 'Double-layered neckband shaped to sit cleanly upright without stiffness.',
-      detailNote: 'Bonded two-ply interlining with pressed seam allowances for lasting form.',
+      title: 'Structured Rib Collar',
+      description: '1x1 rib neckband with interior coverstitch binding and woven neck label.',
+      detailNote: 'Double-bound neck seam paired with a woven jacquard interior tag and corner lime tacks.',
       bgColor: '#0A0A0A',
       progressStop: 0.06,
       macroImage: '/images/detail-collar.webp', // CLIENT SWAP: macro shoot of collar construction
@@ -134,9 +134,9 @@ export const brandConfig = {
     {
       id: 'closure',
       label: 'Closure',
-      title: 'Concealed Front Placket',
-      description: 'Anodized magnetic hardware hidden beneath an uninterrupted front line.',
-      detailNote: 'Flush-set gunmetal snap paired with a folded wind placket.',
+      title: 'Concealed Storm Placket',
+      description: 'Anodized gunmetal snap hardware integrated into an uninterrupted folded placket.',
+      detailNote: 'Recessed circular magnetic collar snap paired with a slotted lower gunmetal anchor bar and chest welt.',
       bgColor: '#0D0E11',
       progressStop: 0.36,
       macroImage: '/images/detail-closure.webp', // CLIENT SWAP: macro shoot of front placket & fastener
@@ -145,9 +145,9 @@ export const brandConfig = {
     {
       id: 'stitching',
       label: 'Stitching',
-      title: 'Reinforced Seam Work',
-      description: 'Dense tonal stitching anchored with a signature bar-tack stress point.',
-      detailNote: 'Twin-needle lockstitching finished with contrast bar-tack reinforcement.',
+      title: 'Signature Bar-Tack & Taping',
+      description: '18-stitch lime bar-tack anchored atop matte carbon spine and shoulder taping.',
+      detailNote: 'High-tenacity lime rear neck reinforcement paired with laser-welted chest pocket tack.',
       bgColor: '#0B0C0E',
       progressStop: 0.65,
       macroImage: '/images/detail-stitching.webp', // CLIENT SWAP: macro shoot of flatlock seam & bar-tack
@@ -156,9 +156,9 @@ export const brandConfig = {
     {
       id: 'weave',
       label: 'Weave',
-      title: 'Dense Matte Twill',
-      description: 'Close-woven matte cloth balancing wind resistance with natural drape.',
-      detailNote: 'High-twist yarn weave treated with a fluorocarbon-free water-repellent finish.',
+      title: 'Dense 2/2 Matte Twill',
+      description: 'Close-woven diagonal twill balancing wind resistance with sculpted gravity drape.',
+      detailNote: 'High-twist yarn weave with subtle cavity shading and fluorocarbon-free water-repellent finish.',
       bgColor: '#0A0A0A',
       progressStop: 0.94,
       macroImage: '/images/detail-weave.webp', // CLIENT SWAP: macro shoot of diagonal twill weave
