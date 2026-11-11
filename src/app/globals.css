@@ -352,6 +352,7 @@ html.has-cursor * {
   width: 100%;
   height: 100%;
   transform-origin: 50% 52%;
+  filter: brightness(1.12) contrast(1.06);
 }
 
 .stages {
@@ -363,7 +364,7 @@ html.has-cursor * {
 
 .stage {
   position: absolute;
-  width: clamp(290px, 28vw, 540px);
+  width: clamp(270px, 26vw, 480px);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -373,23 +374,23 @@ html.has-cursor * {
 }
 
 .stage--left-top {
-  left: 3vw;
-  top: 12vh;
+  left: 6vw;
+  top: 11vh;
 }
 
 .stage--right-bottom {
-  right: 3vw;
-  bottom: 11vh;
+  right: 6vw;
+  bottom: 10vh;
 }
 
 .stage--left-bottom {
-  left: 3vw;
-  bottom: 11vh;
+  left: 6vw;
+  bottom: 10vh;
 }
 
 .stage--right-top {
-  right: 3vw;
-  top: 12vh;
+  right: 6vw;
+  top: 11vh;
 }
 
 .stage:first-child {
@@ -414,12 +415,12 @@ html.has-cursor * {
   justify-content: space-between;
   font-size: 14px;
   letter-spacing: 0.04em;
-  color: rgba(237, 232, 223, 0.72);
+  color: rgba(237, 232, 223, 0.82);
   margin-bottom: 10px;
 }
 
 .stage__title {
-  font-size: clamp(2.6rem, 4.6vw, 5rem);
+  font-size: clamp(2.3rem, 3.85vw, 4.4rem);
   line-height: 0.96;
   margin-bottom: 10px;
   max-width: 14ch;
@@ -429,7 +430,7 @@ html.has-cursor * {
 .stage__line {
   font-size: 18px;
   line-height: 1.5;
-  color: rgba(237, 232, 223, 0.8);
+  color: rgba(237, 232, 223, 0.88);
   max-width: 30ch;
 }
 

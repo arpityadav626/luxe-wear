@@ -20,9 +20,9 @@ const STAGE_POSITIONS = [
 
 /**
  * Section 2: GARMENT FILM / PINNED STORY
- * 380vh ScrollTrigger pin scrubbing the centered rim-lit 2D turntable canvas
- * over warm studio spotlight, flanked by alternating left/right 24vw macro
- * stages with 10% in / 75% hold / 10% out timing.
+ * 440vh ScrollTrigger pin scrubbing the 360-frame (0.50 deg/step) rim-lit 2D turntable
+ * canvas over warm studio spotlight, flanked by alternating left/right 26vw macro stages
+ * with ~7% entry / hold / ~8% exit timing.
  */
 export function PinnedStorySection() {
   const root = useRef<HTMLElement>(null);
@@ -39,15 +39,16 @@ export function PinnedStorySection() {
         const state = { frame: 0 };
         const els = gsap.utils.toArray<HTMLElement>('.stage');
 
-        // ONE master timeline, duration 1 = the whole pinned scroll (380vh).
+        // ONE master timeline, duration 1 = the whole pinned scroll (440vh).
+        // `scrub: true` locks 1:1 with Lenis's already smoothed RAF scroll (zero double-easing lag).
         const tl = gsap.timeline({
           defaults: { ease: 'none' },
           scrollTrigger: {
             trigger: root.current,
             start: 'top top',
-            end: '+=380%',
+            end: '+=440%',
             pin: pin.current,
-            scrub: 0.75,
+            scrub: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
           },
@@ -61,15 +62,15 @@ export function PinnedStorySection() {
         );
 
         // 2) Subtle restrained push-in on centered garment (keeps 180° back compact)
-        tl.fromTo(canvasRef.current, { scale: 1 }, { scale: 1.035, duration: 1 }, 0);
+        tl.fromTo(canvasRef.current, { scale: 1 }, { scale: 1.04, duration: 1 }, 0);
 
-        // 3) Each stage owns a 0.25 slice: ~10% fade-in -> 75% full hold -> ~10% fade-out
+        // 3) Each stage owns a 0.25 slice: reaches full visibility in first 7% -> holds -> crisp exit
         els.forEach((el, i) => {
           const a = i / S;
           const b = (i + 1) / S;
           const len = b - a;
-          const fadeIn = len * 0.1;
-          const fadeOut = len * 0.1;
+          const fadeIn = len * 0.07; // 7% of slice (<= 8%)
+          const fadeOut = len * 0.08;
           const media = el.querySelector('.stage__media');
           const img = el.querySelector('.stage__media img');
           const text = el.querySelector('.stage__text');
@@ -79,35 +80,35 @@ export function PinnedStorySection() {
             gsap.set(media, { clipPath: 'inset(0% 0 0% 0)' });
             gsap.set(img, { scale: 1 });
             gsap.set(text, { y: 0, opacity: 1 });
-            tl.to(el, { autoAlpha: 0, duration: fadeOut, ease: 'power2.in' }, b - fadeOut - 0.012);
+            tl.to(el, { autoAlpha: 0, duration: fadeOut, ease: 'power2.in' }, b - fadeOut);
           } else {
             tl.fromTo(
               el,
               { autoAlpha: 0 },
               { autoAlpha: 1, duration: fadeIn * 0.65, ease: 'power2.out' },
-              a + 0.01
+              a
             );
             tl.fromTo(
               media,
               { clipPath: 'inset(0 0 100% 0)' },
               { clipPath: 'inset(0 0 0% 0)', duration: fadeIn, ease: 'power3.out' },
-              a + 0.01
+              a
             );
             tl.fromTo(
               img,
-              { scale: 1.12 },
-              { scale: 1, duration: fadeIn * 1.4, ease: 'power3.out' },
-              a + 0.01
+              { scale: 1.08 },
+              { scale: 1, duration: fadeIn * 1.15, ease: 'power3.out' },
+              a
             );
             tl.fromTo(
               text,
-              { y: 16, opacity: 0 },
-              { y: 0, opacity: 1, duration: fadeIn * 0.9, ease: 'power3.out' },
-              a + 0.014
+              { y: 12, opacity: 0 },
+              { y: 0, opacity: 1, duration: fadeIn * 0.85, ease: 'power3.out' },
+              a + fadeIn * 0.15
             );
 
             if (i < S - 1) {
-              tl.to(el, { autoAlpha: 0, duration: fadeOut, ease: 'power2.in' }, b - fadeOut - 0.012);
+              tl.to(el, { autoAlpha: 0, duration: fadeOut, ease: 'power2.in' }, b - fadeOut);
             }
           }
         });

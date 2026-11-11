@@ -59,7 +59,7 @@ export const sequence = {
   prefix: 'frame_',
   ext: 'webp',
   pad: 4,
-  count: 90,
+  count: 360,
 };
 
 export const frameSrc = (n: number) =>
@@ -272,7 +272,7 @@ export const brandConfig = {
         overlayLines: ['Weight', 'in motion'],
         caption: 'Bonded trench shell',
         image: '/images/lookbook-02.webp',
-        alt: 'Three-quarter rear stride lookbook photograph wearing long matte charcoal funnel-collar trench coat in dark colonnade',
+        alt: 'Full-length widescreen architectural courtyard photograph wearing long matte charcoal high-funnel trench coat in stride',
       },
       {
         id: 'look-03',
@@ -280,7 +280,7 @@ export const brandConfig = {
         overlayLines: ['Layered', 'form'],
         caption: 'Modular utility vest over merino knit',
         image: '/images/lookbook-03.webp',
-        alt: 'Close editorial frame highlighting modular magnetic-buckle vest layered over charcoal merino mock-neck knit',
+        alt: 'Widescreen concrete gallery photograph wearing modular matte-black utility vest layered over charcoal merino mock-neck knit',
       },
     ] satisfies LookbookFrame[],
   },

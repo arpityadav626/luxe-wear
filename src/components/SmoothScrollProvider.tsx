@@ -85,17 +85,26 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     () => false
   );
 
+  const pathname = usePathname();
   const [lenis, setLenis] = useState<Lenis | null>(null);
-  const [isPreloaded, setIsPreloaded] = useState(true);
+  const [isPreloaded, setIsPreloaded] = useState(() => pathname !== '/');
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isCartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
-  const pathname = usePathname();
 
   const lenisRef = useRef<Lenis | null>(null);
   const subscribersRef = useRef<Set<(metrics: ScrollMetrics) => void>>(new Set());
 
   useEffect(() => {
+    if (isPreloaded) return;
+    const safety = window.setTimeout(() => {
+      setIsPreloaded(true);
+    }, 2200);
+    return () => window.clearTimeout(safety);
+  }, [isPreloaded]);
+
+  useEffect(() => {
+    if (!isPreloaded) return;
     const hash = typeof window !== 'undefined' ? window.location.hash : '';
     const timer = window.setTimeout(() => {
       if (lenisRef.current) {
@@ -112,7 +121,7 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     }, 180);
 
     return () => window.clearTimeout(timer);
-  }, [pathname]);
+  }, [isPreloaded, pathname]);
 
   const publishMetrics = useCallback((metrics: ScrollMetrics) => {
     subscribersRef.current.forEach((cb) => cb(metrics));

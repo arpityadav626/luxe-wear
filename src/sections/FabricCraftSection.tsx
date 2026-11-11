@@ -7,8 +7,8 @@ import { DURATION, EASE, gsap, prefersReducedMotion, ScrollTrigger } from '@/lib
 import { assetPath } from '@/lib/assets';
 
 /**
- * Section 3: CLOTH & TAILORING (THE ONE LIGHT BONE SECTION)
- * Warm bone ground (#EDE8DF) paired with obsidian ink (#0B0B0A), muted stone (#6E695F / #5E5950),
+ * Section 3: CLOTH & TAILORING (LIGHT STONE SECTION)
+ * Warm stone ground (#E6E1D7) paired with obsidian ink (#0B0B0A), muted stone (#6E695F / #5E5950),
  * sentence-case Instrument Serif headline, sculptural travertine/twill photography,
  * and a single restrained editorial statement.
  */
@@ -92,7 +92,7 @@ export function FabricCraftSection() {
       id="fabric-craft"
       ref={sectionRef}
       aria-label="Cloth and tailoring"
-      className="relative w-full bg-[#EDE8DF] text-[#0B0B0A]"
+      className="relative w-full bg-[#E6E1D7] text-[#0B0B0A]"
       style={{
         padding: 'clamp(4.5rem, 10vh, 7.5rem) var(--gutter)',
       }}
@@ -116,11 +116,11 @@ export function FabricCraftSection() {
         </h2>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 items-end gap-8 md:mt-12 md:grid-cols-12 md:gap-12">
-        <div className="md:col-span-6">
+      <div className="mt-10 flex flex-col gap-8 md:mt-12 md:flex-row md:items-end md:gap-[4vw]">
+        <div className="w-full shrink-0 md:w-[55vw]">
           <div
             ref={macroFrameRef}
-            className="relative aspect-[4/3] max-h-[54vh] w-full overflow-hidden bg-[#DFD8CC]"
+            className="relative aspect-[16/10] w-full overflow-hidden bg-[#D8D3C9]"
           >
             <div ref={macroMediaRef} className="relative h-full w-full will-change-transform">
               <Image
@@ -128,15 +128,15 @@ export function FabricCraftSection() {
                 alt={craft.macroAlt}
                 fill
                 loading="lazy"
-                sizes="(max-width: 768px) 92vw, 48vw"
+                sizes="(max-width: 768px) 92vw, 55vw"
                 className="object-cover"
               />
             </div>
           </div>
         </div>
 
-        <div className="md:col-span-5 md:col-start-8 md:pb-2">
-          <p className="max-w-[34ch] text-[18px] leading-[1.6] text-[#0B0B0A]/86 sm:text-[20px]">
+        <div className="md:pb-1">
+          <p className="max-w-[34ch] text-[18px] leading-[1.6] text-[#0B0B0A]/88">
             {craft.statement}
           </p>
         </div>

@@ -19,13 +19,13 @@ function CollectionProductCard({
       className="group flex w-[80vw] max-w-[340px] shrink-0 snap-center flex-col justify-between md:w-[29vw] md:min-w-[310px] md:max-w-[440px] md:snap-none"
       aria-label={product.name}
     >
-      {/* Unified #D8D3C9 Warm Stone Container — exclusively carries [data-cursor="View"] */}
+      {/* Unified #D8D3C9 Warm Stone Container — carries [data-cursor="View"] */}
       <button
         type="button"
         onClick={() => onSelect(product)}
         data-cursor="View"
         aria-label={`View ${product.name}`}
-        className="relative aspect-[4/5] max-h-[48vh] w-full overflow-hidden bg-[#D8D3C9] text-left"
+        className="relative aspect-[4/5] max-h-[55vh] w-full overflow-hidden bg-[#D8D3C9] text-left"
       >
         <Image
           src={assetPath(product.image)}
@@ -33,7 +33,7 @@ function CollectionProductCard({
           fill
           loading="lazy"
           sizes="(max-width: 768px) 80vw, 29vw"
-          className="object-contain object-center p-4 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+          className="object-contain object-center p-[5%] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
         />
       </button>
 
@@ -140,7 +140,7 @@ export function HorizontalCollectionSection() {
         id="collection"
         ref={sectionRef}
         aria-label="Capsule collection"
-        className="relative flex w-full flex-col justify-between overflow-hidden border-t border-[#0B0B0A]/12 bg-[#E4DFD5] text-[#0B0B0A] md:h-[100dvh]"
+        className="relative flex w-full flex-col justify-between overflow-hidden border-t border-[#0B0B0A]/12 bg-[#E6E1D7] text-[#0B0B0A] md:h-[100dvh]"
         style={{
           paddingTop: 'clamp(4.75rem, 8.5vh, 5.75rem)',
           paddingBottom: 'clamp(1.75rem, 4vh, 2.75rem)',

@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { brand, hero } from '@/lib/brand.config';
 import { assetPath } from '@/lib/assets';
+import { useAppState } from '@/components/SmoothScrollProvider';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -17,34 +18,20 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
  */
 export function HeroSection() {
   const root = useRef<HTMLElement>(null);
+  const { isPreloaded } = useAppState();
+  const entranceDone = useRef(false);
 
+  // Settle initial pre-reveal pose & register ScrollTrigger scrub
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        // The ONE orchestrated moment: wordmark rises out of its mask, garment surfaces.
-        gsap.from('.hero__word', {
-          yPercent: 105,
-          duration: 1.7,
-          ease: 'expo.out',
-          stagger: 0.14,
-          delay: 0.15,
-        });
-        gsap.from('.hero__media', {
-          opacity: 0.02,
-          scale: 1.04,
-          duration: 1.8,
-          ease: 'expo.out',
-          delay: 0.1,
-        });
-        gsap.from('.hero__foot > *', {
-          opacity: 0,
-          duration: 0.9,
-          ease: 'power2.out',
-          stagger: 0.08,
-          delay: 0.45,
-        });
+        if (!isPreloaded && !entranceDone.current) {
+          gsap.set('.hero__word', { yPercent: 105 });
+          gsap.set('.hero__media', { scale: 1.045 });
+          gsap.set('.hero__foot > *', { opacity: 0 });
+        }
 
         // Scroll: garment drifts closer, words part, footer line leaves gently.
         gsap
@@ -66,6 +53,51 @@ export function HeroSection() {
       return () => mm.revert();
     },
     { scope: root }
+  );
+
+  // Coordinated wordmark + garment entrance right as Preloader curtain lifts (or immediately if skipped)
+  useGSAP(
+    () => {
+      if (!isPreloaded || entranceDone.current) return;
+      entranceDone.current = true;
+
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.fromTo(
+          '.hero__word',
+          { yPercent: 105 },
+          {
+            yPercent: 0,
+            duration: 1.55,
+            ease: 'expo.out',
+            stagger: 0.12,
+          }
+        );
+        gsap.fromTo(
+          '.hero__media',
+          { scale: 1.045 },
+          {
+            scale: 1,
+            duration: 1.65,
+            ease: 'expo.out',
+          }
+        );
+        gsap.fromTo(
+          '.hero__foot > *',
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: 0.85,
+            ease: 'power2.out',
+            stagger: 0.08,
+            delay: 0.25,
+          }
+        );
+      });
+
+      return () => mm.revert();
+    },
+    { scope: root, dependencies: [isPreloaded] }
   );
 
   return (

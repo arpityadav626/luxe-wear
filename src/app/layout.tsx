@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { instrumentSerif, interTight } from './fonts';
 import { brandConfig } from '@/lib/brand.config';
 import { SmoothScrollProvider } from '@/components/SmoothScrollProvider';
+import { Preloader } from '@/components/Preloader';
 import { CustomCursor } from '@/components/CustomCursor';
 import { Navbar } from '@/components/Navbar';
 import './globals.css';
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         </a>
 
         <SmoothScrollProvider>
+          <Preloader />
           <Navbar />
           <main id="main" tabIndex={-1}>
             {children}

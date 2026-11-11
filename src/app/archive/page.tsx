@@ -90,7 +90,7 @@ export default function ArchivePage() {
                   fill
                   loading="lazy"
                   sizes="(max-width: 768px) 92vw, (max-width: 1024px) 46vw, 30vw"
-                  className="object-contain object-center p-5 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                  className="object-contain object-center p-[5%] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
                 />
               </button>
 

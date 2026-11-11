@@ -165,9 +165,9 @@ export function Navbar() {
                       if (item.href.startsWith('#') || item.href.startsWith('/')) e.preventDefault();
                       handleNavClick(item.href);
                     }}
-                    className="group flex items-baseline justify-between py-3 sm:py-4"
+                    className="group flex items-baseline justify-between py-2.5 sm:py-3"
                   >
-                    <span className="display text-[clamp(1.75rem,3.6vw,3.3rem)] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-3">
+                    <span className="display text-[clamp(2.35rem,5vw,4.6rem)] leading-[1.06] tracking-[-0.025em] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-3">
                       {item.label}
                     </span>
                     <span className="text-[14px] tracking-[0.04em] tabular-nums text-[#8A857B] transition-colors group-hover:text-[#EDE8DF]">

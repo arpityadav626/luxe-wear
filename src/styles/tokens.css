@@ -5,6 +5,8 @@
 :root {
   --bg: #0b0b0a;
   --fg: #ede8df;
+  --stone: #e6e1d7;
+  --stone-card: #d8d3c9;
   --muted: #8a857b;
   --accent: #b8a27a;
   --line: rgba(237, 232, 223, 0.12);
