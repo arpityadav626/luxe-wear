@@ -163,7 +163,7 @@ export function HorizontalCollectionSection() {
         </div>
 
         {/* Horizontal Track: no data-cursor on outer strip; only product image buttons opt in */}
-        <div ref={wrapperRef} className="my-auto w-full overflow-hidden py-4 md:py-2">
+        <div ref={wrapperRef} className="my-auto w-full overflow-hidden motion-reduce:overflow-x-auto py-4 md:py-2">
           <div
             ref={trackRef}
             onScroll={handleMobileScroll}

@@ -189,6 +189,7 @@ body::after {
   position: fixed;
   left: 0;
   top: 0;
+  opacity: 0;
   pointer-events: none;
   z-index: 300;
   mix-blend-mode: difference;
@@ -565,6 +566,55 @@ details > summary::-webkit-details-marker {
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+  }
+
+  .film .film__pin {
+    height: auto;
+    min-height: 0;
+    padding: clamp(4rem, 8vh, 6rem) var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 5vh, 4rem);
+  }
+
+  .film .film__canvas {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: clamp(420px, 66vh, 640px);
+    margin: 0 auto;
+  }
+
+  .film .stages {
+    position: static;
+    inset: auto;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 4vw, 3.25rem);
+    pointer-events: auto;
+  }
+
+  @media (min-width: 768px) {
+    .film .stages {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .film .stage {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    width: 100%;
+    visibility: visible;
+    opacity: 1;
+  }
+
   .nav-roll > span,
   .nav-roll::after {
     transition: none;

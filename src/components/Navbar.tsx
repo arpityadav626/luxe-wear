@@ -9,6 +9,9 @@ import { brandConfig } from '@/lib/brand.config';
 import { useLenis } from '@/hooks/useLenis';
 import { useAppState } from './SmoothScrollProvider';
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 /**
  * Quiet top header: plain text links, feathered backdrop blur gradient (zero border line),
  * hides on scroll down and returns smoothly on scroll up.
@@ -32,6 +35,14 @@ export function Navbar() {
 
   const [hidden, setHidden] = useState(false);
   const lastScroll = useRef(0);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const cartTriggerRef = useRef<HTMLButtonElement>(null);
+  const menuPanelRef = useRef<HTMLElement>(null);
+  const menuCloseBtnRef = useRef<HTMLButtonElement>(null);
+  const cartPanelRef = useRef<HTMLElement>(null);
+  const cartCloseBtnRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const wasOverlayOpenRef = useRef<'menu' | 'cart' | null>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -47,15 +58,70 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
+    const anyOpen = isMenuOpen || isCartOpen;
+
+    if (anyOpen && !wasOverlayOpenRef.current) {
+      previousFocusRef.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    }
+
+    if (!anyOpen) {
+      const closedKind = wasOverlayOpenRef.current;
+      if (closedKind) {
+        wasOverlayOpenRef.current = null;
+        const target = previousFocusRef.current;
+        previousFocusRef.current = null;
+        const fallback = closedKind === 'menu' ? menuTriggerRef.current : cartTriggerRef.current;
+        const restoreTarget = target && target.isConnected ? target : fallback;
+        if (restoreTarget && restoreTarget.isConnected) {
+          requestAnimationFrame(() => restoreTarget.focus());
+        }
+      }
+      return;
+    }
+
+    wasOverlayOpenRef.current = isMenuOpen ? 'menu' : 'cart';
+    const activeContainerRef = isMenuOpen ? menuPanelRef : cartPanelRef;
+    const initialBtnRef = isMenuOpen ? menuCloseBtnRef : cartCloseBtnRef;
+
+    const focusTimer = window.setTimeout(() => {
+      initialBtnRef.current?.focus();
+    }, 30);
+
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setMenuOpen(false);
         setCartOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const container = activeContainerRef.current;
+      if (!container) return;
+      const focusables = Array.from(
+        container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      ).filter((el) => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (!container.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
       }
     };
+
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [setMenuOpen, setCartOpen]);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isMenuOpen, isCartOpen, setMenuOpen, setCartOpen]);
 
   const handleNavClick = (href: string) => {
     setMenuOpen(false);
@@ -91,6 +157,7 @@ export function Navbar() {
 
         <nav className="header__nav" aria-label="Primary">
           <button
+            ref={menuTriggerRef}
             type="button"
             onClick={() => {
               setCartOpen(false);
@@ -104,6 +171,7 @@ export function Navbar() {
           </button>
 
           <button
+            ref={cartTriggerRef}
             type="button"
             onClick={() => {
               setMenuOpen(false);
@@ -122,7 +190,10 @@ export function Navbar() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.nav
+            ref={menuPanelRef}
             id="site-menu"
+            role="dialog"
+            aria-modal="true"
             aria-label="Primary navigation"
             initial={{ clipPath: 'inset(0% 0% 100% 0%)', opacity: 0.98 }}
             animate={{ clipPath: 'inset(0% 0% 0% 0%)', opacity: 1 }}
@@ -139,6 +210,7 @@ export function Navbar() {
                 {brandConfig.brand.tagline}
               </span>
               <button
+                ref={menuCloseBtnRef}
                 type="button"
                 onClick={() => setMenuOpen(false)}
                 className="link text-[#EDE8DF]"
@@ -206,7 +278,10 @@ export function Navbar() {
             />
 
             <motion.aside
+              ref={cartPanelRef}
               id="site-cart"
+              role="dialog"
+              aria-modal="true"
               aria-label="Shopping Bag"
               initial={{ x: '100%' }}
               animate={{ x: '0%' }}
@@ -225,6 +300,7 @@ export function Navbar() {
                   </h2>
                 </div>
                 <button
+                  ref={cartCloseBtnRef}
                   type="button"
                   onClick={() => setCartOpen(false)}
                   className="link text-[#EDE8DF]"

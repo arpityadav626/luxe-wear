@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import { GARMENT_SIZES, type CapsuleProduct, type GarmentSize } from '@/lib/brand.config';
 import { assetPath } from '@/lib/assets';
 import { useAppState } from '@/components/SmoothScrollProvider';
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 /**
  * Quiet-luxury product detail modal triggered when clicking any Capsule / Archive image (`data-cursor="View"`).
- * Keeps collection cards pure while still providing sizing + cart addition.
+ * Keeps collection cards pure while still providing sizing + cart addition and keyboard focus trapping.
  */
 export function ProductViewModal({
   product,
@@ -20,18 +23,67 @@ export function ProductViewModal({
 }) {
   const [size, setSize] = useState<GarmentSize>('M');
   const { addToCart } = useAppState();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const addedToCartRef = useRef(false);
 
   useEffect(() => {
-    if (!product) return;
+    if (!product) {
+      if (!addedToCartRef.current && previousFocusRef.current?.isConnected) {
+        const target = previousFocusRef.current;
+        previousFocusRef.current = null;
+        requestAnimationFrame(() => target.focus());
+      }
+      addedToCartRef.current = false;
+      return;
+    }
+
+    addedToCartRef.current = false;
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    const focusTimer = window.setTimeout(() => {
+      closeBtnRef.current?.focus();
+    }, 30);
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const container = dialogRef.current;
+      if (!container) return;
+      const focusables = Array.from(
+        container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      ).filter((el) => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (!container.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
+
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener('keydown', onKey);
+    };
   }, [product, onClose]);
 
   const handleAdd = () => {
     if (!product) return;
+    addedToCartRef.current = true;
     addToCart({
       id: product.id,
       code: product.code,
@@ -57,6 +109,7 @@ export function ProductViewModal({
             style={{ zIndex: 'var(--z-drawer)' }}
           />
           <motion.div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label={product.name}
@@ -71,7 +124,12 @@ export function ProductViewModal({
               <span className="text-[14px] tracking-[0.04em] text-[#8A857B]">
                 {product.category}
               </span>
-              <button type="button" onClick={onClose} className="link text-[#EDE8DF]">
+              <button
+                ref={closeBtnRef}
+                type="button"
+                onClick={onClose}
+                className="link text-[#EDE8DF]"
+              >
                 Close
               </button>
             </div>

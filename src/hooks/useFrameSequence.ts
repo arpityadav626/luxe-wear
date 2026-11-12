@@ -13,23 +13,52 @@ interface DecodedFrame {
 
 const ANCHOR_STRIDE = 10;
 
-function isAnchorIndex(idx: number, total: number): boolean {
-  return idx === 0 || idx === total - 1 || idx % ANCHOR_STRIDE === 0;
+function isSampledIndex(idx: number, total: number, stride: number): boolean {
+  return idx === total - 1 || idx % stride === 0;
 }
 
-function buildMultiPassOrder(total: number): number[] {
+function isAnchorIndex(idx: number, total: number, stride: number): boolean {
+  if (idx === 0 || idx === total - 1) return true;
+  if (!isSampledIndex(idx, total, stride)) return false;
+  return Math.floor(idx / stride) % ANCHOR_STRIDE === 0;
+}
+
+function snapSampledIndex(floatIndex: number, total: number, stride: number): number {
+  const clamped = Math.max(0, Math.min(total - 1, Math.round(floatIndex)));
+  if (stride <= 1 || isSampledIndex(clamped, total, stride)) return clamped;
+  const down = Math.floor(clamped / stride) * stride;
+  const up = Math.min(total - 1, down + stride);
+  return clamped - down <= up - clamped ? down : up;
+}
+
+function getBracket(floatIndex: number, total: number, stride: number) {
+  const clamped = Math.max(0, Math.min(total - 1, floatIndex));
+  if (stride <= 1) {
+    const lo = Math.floor(clamped);
+    const hi = Math.min(total - 1, lo + 1);
+    return { lo, hi, frac: clamped - lo };
+  }
+  const lo = Math.min(total - 1, Math.floor(clamped / stride) * stride);
+  const hi = Math.min(total - 1, lo + stride);
+  const span = Math.max(1, hi - lo);
+  const frac = lo === hi ? 0 : (clamped - lo) / span;
+  return { lo, hi, frac };
+}
+
+function buildMultiPassOrder(total: number, stride: number): number[] {
   const seen = new Uint8Array(total);
   const order: number[] = [];
   const push = (i: number) => {
-    if (!seen[i]) {
+    if (i >= 0 && i < total && isSampledIndex(i, total, stride) && !seen[i]) {
       seen[i] = 1;
       order.push(i);
     }
   };
   push(0);
   push(total - 1);
-  for (const stride of [ANCHOR_STRIDE, 4, 2, 1]) {
-    for (let i = 0; i < total; i += stride) {
+  for (const mult of [ANCHOR_STRIDE, 4, 2, 1]) {
+    const step = stride * mult;
+    for (let i = 0; i < total; i += step) {
       push(i);
     }
   }
@@ -37,19 +66,20 @@ function buildMultiPassOrder(total: number): number[] {
 }
 
 /**
- * High-FPS 360-frame turntable loader & renderer:
+ * High-FPS turntable loader & renderer:
  * - Protects initial Hero LCP / Lighthouse score by loading only frame 0 until genuine user
  *   engagement (scroll/wheel/touch/key or section intersection).
- * - Streams frames into compressed in-memory Blobs via a playhead-prioritized fetch pool
- *   (no duplicate network fetches on repeat scrubs).
+ * - Desktop streams all 360 frames (0.50 deg/step); mobile streams every 2nd frame (stride = 2,
+ *   181 frames -> ~50% less cellular payload) while retaining adjacent sub-frame alpha blending.
  * - Decodes off the main thread via `createImageBitmap(blob)` inside a bounded GPU sliding window
- *   with permanent anchor frames so both fine scrubbing and instant scrollbar jumps render crisply.
+ *   with permanent anchor frames so both fine scrubbing and scrollbar jumps render crisply.
  */
 export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>) {
   const decodedRef = useRef<(DecodedFrame | null)[]>([]);
   const currentRef = useRef(0);
   const currentFloatRef = useRef(0);
   const dirRef = useRef<1 | -1>(1);
+  const strideRef = useRef(1);
   const failedRef = useRef(false);
   const requestDecodeRef = useRef<(idx: number) => void>(() => {});
 
@@ -68,10 +98,8 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
       const count = frames.length;
       if (count === 0) return;
 
-      const clamped = Math.max(0, Math.min(count - 1, floatIndex));
-      const lo = Math.floor(clamped);
-      const hi = Math.min(count - 1, lo + 1);
-      const frac = clamped - lo;
+      const stride = strideRef.current;
+      const { lo, hi, frac } = getBracket(floatIndex, count, stride);
 
       const drawSingle = (frame: DecodedFrame, alpha: number) => {
         const iw = frame.width;
@@ -96,7 +124,7 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
         } else if (frac >= 0.975) {
           drawSingle(frameHi, 1);
         } else {
-          // Adjacent 0.5° sub-frame crossfade eliminates 60/120Hz frame-stepping with zero dimming
+          // Adjacent sampled sub-frame crossfade eliminates frame-stepping with zero dimming
           drawSingle(frameLo, 1);
           drawSingle(frameHi, frac);
           ctx.globalAlpha = 1;
@@ -104,17 +132,17 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
         return;
       }
 
-      const center = Math.round(clamped);
-      let frame: DecodedFrame | null = frames[center] ?? null;
+      const center = snapSampledIndex(floatIndex, count, stride);
+      let frame: DecodedFrame | null = frames[center] ?? frameLo ?? frameHi ?? null;
       if (!frame) {
-        // Outward nearest-distance search (slight bias opposite travel on ties for continuity)
-        for (let d = 1; d < count; d++) {
+        for (let step = 1; step * stride < count; step++) {
+          const d = step * stride;
           const prev = center - d;
           if (prev >= 0 && frames[prev]) {
             frame = frames[prev];
             break;
           }
-          const next = center + d;
+          const next = Math.min(count - 1, center + d);
           if (next < count && frames[next]) {
             frame = frames[next];
             break;
@@ -145,7 +173,7 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
         dirRef.current = clamped >= currentFloatRef.current ? 1 : -1;
       }
       currentFloatRef.current = clamped;
-      const target = Math.round(clamped);
+      const target = snapSampledIndex(clamped, sequence.count, strideRef.current);
       currentRef.current = target;
       requestDecodeRef.current(target);
       draw(clamped);
@@ -158,7 +186,9 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
     const count = sequence.count;
     const isMobile =
       window.matchMedia?.('(pointer: coarse)').matches || window.innerWidth < 900;
-    const maxDecoded = isMobile ? 72 : 180;
+    const stride = isMobile ? 2 : 1;
+    strideRef.current = stride;
+    const maxDecoded = isMobile ? 64 : 180;
     const fetchConcurrency = isMobile ? 4 : 8;
     const decodeConcurrency = isMobile ? 2 : 4;
 
@@ -178,7 +208,7 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
     let restStarted = false;
     let preferBitmap = typeof createImageBitmap === 'function';
 
-    const baseOrder = buildMultiPassOrder(count);
+    const baseOrder = buildMultiPassOrder(count, stride);
     let orderCursor = 0;
 
     const evictIfNeeded = (protectCenter: number) => {
@@ -186,10 +216,9 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
         let victim = -1;
         let maxScore = -1;
         for (const k of activeDecoded) {
-          if (isAnchorIndex(k, count)) continue;
+          if (isAnchorIndex(k, count, stride)) continue;
           const dist = Math.abs(k - protectCenter);
-          // Protect immediate playback band tightly unless unavoidable
-          if (dist <= 6 && activeDecoded.size < maxDecoded + 12) continue;
+          if (dist <= 6 * stride && activeDecoded.size < maxDecoded + 12) continue;
           const score = dist * 1_000_000 - lastTouched[k];
           if (score > maxScore) {
             maxScore = score;
@@ -197,9 +226,8 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
           }
         }
         if (victim === -1) {
-          // Absolute fallback: evict farthest regardless of distance
           for (const k of activeDecoded) {
-            if (isAnchorIndex(k, count)) continue;
+            if (isAnchorIndex(k, count, stride)) continue;
             const dist = Math.abs(k - protectCenter);
             if (dist > maxScore) {
               maxScore = dist;
@@ -282,7 +310,7 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
         activeDecoded.add(idx);
 
         const cur = currentRef.current;
-        if (Math.abs(idx - cur) <= 2 || idx === 0) {
+        if (Math.abs(idx - cur) <= stride * 2 || idx === 0) {
           draw(currentFloatRef.current);
         }
       } catch {
@@ -296,26 +324,31 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
     const pickNextDecode = (): number => {
       const cur = currentRef.current;
       const dir = dirRef.current;
-      const lo = Math.floor(currentFloatRef.current);
-      const hi = Math.min(count - 1, lo + 1);
+      const { lo, hi } = getBracket(currentFloatRef.current, count, stride);
       // 1) Active sub-frame bracket [lo, hi] first for instant silky compositing
       if (blobs[cur] && decodeState[cur] === 0) return cur;
       if (blobs[hi] && decodeState[hi] === 0) return hi;
       if (blobs[lo] && decodeState[lo] === 0) return lo;
 
-      // 2) Bias 2:1 ahead in the user's active scroll direction
-      const winAhead = isMobile ? 20 : 38;
-      const winBehind = isMobile ? 10 : 16;
+      // 2) Bias 2:1 ahead in the user's active scroll direction (aligned to stride)
+      const winAhead = isMobile ? 16 : 38;
+      const winBehind = isMobile ? 8 : 16;
+      const base = stride > 1 ? Math.floor(cur / stride) * stride : cur;
       for (let d = 1; d <= winAhead; d++) {
-        const fwd = cur + d * dir;
-        if (fwd >= 0 && fwd < count && blobs[fwd] && decodeState[fwd] === 0) return fwd;
+        const fwd = base + d * stride * dir;
+        if (fwd >= 0 && fwd < count && isSampledIndex(fwd, count, stride) && blobs[fwd] && decodeState[fwd] === 0) {
+          return fwd;
+        }
         if (d <= winBehind && d % 2 === 0) {
-          const bwd = cur - (d >> 1) * dir;
-          if (bwd >= 0 && bwd < count && blobs[bwd] && decodeState[bwd] === 0) return bwd;
+          const bwd = base - (d >> 1) * stride * dir;
+          if (bwd >= 0 && bwd < count && isSampledIndex(bwd, count, stride) && blobs[bwd] && decodeState[bwd] === 0) {
+            return bwd;
+          }
         }
       }
       // 3) Pre-decode key anchors across the full 180° arc for instant scrub jumps
-      for (let i = 0; i < count; i += ANCHOR_STRIDE) {
+      const step = ANCHOR_STRIDE * stride;
+      for (let i = 0; i < count; i += step) {
         if (blobs[i] && decodeState[i] === 0) return i;
       }
       if (blobs[count - 1] && decodeState[count - 1] === 0) return count - 1;
@@ -334,13 +367,21 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
     const pickNextFetch = (): number => {
       const cur = currentRef.current;
       const dir = dirRef.current;
-      // Highest priority: active neighborhood biased toward scroll travel
-      if (fetchState[cur] === 0) return cur;
-      for (let d = 1; d <= 28; d++) {
-        const fwd = cur + d * dir;
-        if (fwd >= 0 && fwd < count && fetchState[fwd] === 0) return fwd;
-        const bwd = cur - d * dir;
-        if (bwd >= 0 && bwd < count && fetchState[bwd] === 0) return bwd;
+      const { lo, hi } = getBracket(currentFloatRef.current, count, stride);
+      if (fetchState[cur] === 0 && isSampledIndex(cur, count, stride)) return cur;
+      if (fetchState[hi] === 0 && isSampledIndex(hi, count, stride)) return hi;
+      if (fetchState[lo] === 0 && isSampledIndex(lo, count, stride)) return lo;
+
+      const base = stride > 1 ? Math.floor(cur / stride) * stride : cur;
+      for (let d = 1; d <= 20; d++) {
+        const fwd = base + d * stride * dir;
+        if (fwd >= 0 && fwd < count && isSampledIndex(fwd, count, stride) && fetchState[fwd] === 0) {
+          return fwd;
+        }
+        const bwd = base - d * stride * dir;
+        if (bwd >= 0 && bwd < count && isSampledIndex(bwd, count, stride) && fetchState[bwd] === 0) {
+          return bwd;
+        }
       }
       while (orderCursor < baseOrder.length) {
         const cand = baseOrder[orderCursor++];
@@ -353,7 +394,6 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
       while (activeFetches < fetchConcurrency && !cancelled) {
         const idx = pickNextFetch();
         if (idx === -1) break;
-        // Mark via synchronous kickoff to avoid overspawning
         fetchState[idx] = 1;
         activeFetches++;
         void (async (initialIdx: number) => {
@@ -371,8 +411,8 @@ export function useFrameSequence(canvasRef: RefObject<HTMLCanvasElement | null>)
                 blobs[curIdx] = blob;
                 fetchState[curIdx] = 2;
                 if (
-                  Math.abs(curIdx - currentRef.current) <= 24 ||
-                  isAnchorIndex(curIdx, count)
+                  Math.abs(curIdx - currentRef.current) <= 24 * stride ||
+                  isAnchorIndex(curIdx, count, stride)
                 ) {
                   pumpDecodes();
                 }

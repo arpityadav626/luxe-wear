@@ -81,7 +81,7 @@ export const stages: SequenceStoryStage[] = [
     bgColor: '#0B0B0A',
     progressStop: 0.12,
     macroImage: '/images/detail-collar.webp',
-    macroAlt: 'Close-up of the overshirt stand collar and matte hardware',
+    macroAlt: 'Close-up of the overshirt pointed collar and matte hardware',
   },
   {
     id: 'closure',
