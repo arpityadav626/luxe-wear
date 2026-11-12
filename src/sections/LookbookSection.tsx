@@ -90,10 +90,10 @@ function LookbookPlate({
 
   const mobileFocus =
     frame.id === 'look-01'
-      ? 'object-cover object-[72%_48%] md:object-center'
+      ? 'object-cover object-[77%_46%] md:object-center'
       : frame.id === 'look-02'
         ? 'object-cover object-[76%_50%] md:object-center'
-        : 'object-cover object-[76%_40%] md:object-center';
+        : 'object-cover object-[75%_40%] md:object-center';
 
   return (
     <article
@@ -119,13 +119,17 @@ function LookbookPlate({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-[#0B0B0A]/88 via-[#0B0B0A]/32 to-transparent"
         />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0B0B0A]/52 to-transparent"
+        />
       </div>
 
       <div
-        className="relative z-10 mx-[var(--gutter)] mt-12 flex items-center justify-between border-b border-[#EDE8DF]/14 pb-3.5 md:mt-[clamp(4.75rem,8vh,5.75rem)] md:pb-4"
+        className="relative z-10 mx-[var(--gutter)] mt-12 flex items-center justify-between border-b border-[#EDE8DF]/18 pb-3.5 md:mt-[clamp(4.75rem,8vh,5.75rem)] md:pb-4"
       >
-        <span className="text-[14px] tracking-[0.04em] text-[#EDE8DF]/84">{sectionLabel}</span>
-        <span className="text-[14px] tracking-[0.04em] text-[#EDE8DF]/76">{frame.tag}</span>
+        <span className="text-[14px] tracking-[0.04em] text-[#EDE8DF]/90">{sectionLabel}</span>
+        <span className="text-[14px] tracking-[0.04em] text-[#EDE8DF]/88">{frame.tag}</span>
       </div>
 
       <div

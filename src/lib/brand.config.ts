@@ -173,7 +173,7 @@ export const brandConfig = {
 
   fullBleed: {
     image: '/images/editorial-fullbleed.webp',
-    alt: 'Editorial frame in minimalist concrete gallery wearing obsidian stand-collar overshirt and wide wool trousers',
+    alt: 'Editorial frame in minimalist concrete gallery wearing obsidian pointed-collar overshirt and wide wool trousers',
     line: 'Cut to move through quiet rooms.',
   },
 
@@ -188,7 +188,7 @@ export const brandConfig = {
         name: 'Technical overshirt',
         category: 'Outerwear',
         material: 'Dense matte twill',
-        specDetail: 'Concealed magnetic placket, angled welt chest pocket, articulated sleeve.',
+        specDetail: 'Concealed magnetic placket, angled flap chest pocket, articulated sleeve.',
         price: 420,
         image: '/images/collection-overshirt.webp',
         alt: 'Angled studio view of obsidian technical overshirt',
@@ -264,7 +264,7 @@ export const brandConfig = {
         overlayLines: ['Silent', 'structure'],
         caption: 'Technical overshirt & pleated trouser',
         image: '/images/lookbook-01.webp',
-        alt: 'Wide concrete gallery lookbook photograph wearing obsidian stand-collar overshirt and wide pleated trouser beside architectural pillar',
+        alt: 'Wide concrete gallery lookbook photograph wearing obsidian pointed-collar overshirt and wide pleated trouser beside architectural pillar',
       },
       {
         id: 'look-02',
